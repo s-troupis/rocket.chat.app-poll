@@ -1,5 +1,7 @@
 import { IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import { RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+import {IMessageAttachment} from '@rocket.chat/apps-engine/definition/messages';
+import {IRoom} from '@rocket.chat/apps-engine/definition/rooms';
 
 import { IPoll } from '../definition';
 import { createPollBlocks } from './createPollBlocks';
@@ -37,22 +39,39 @@ export async function finishPollMessage({ data, read, persistence, modify }: {
         throw new Error('You are not allowed to finish the poll'); // send an ephemeral message
     }
 
-    try {
-        await finishPoll(poll, { persis: persistence });
+    if(data.value === 'finish') {
+        try {
+            await finishPoll(poll, { persis: persistence });
+    
+            const message = await modify.getUpdater().message(data.message.id as string, data.user);
+            message.setEditor(message.getSender());
+    
+            const block = modify.getCreator().getBlockBuilder();
+    
+            const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
+    
+            createPollBlocks(block, poll.question, poll.options, poll, showNames.value);
+    
+            message.setBlocks(block);
+    
+            return modify.getUpdater().finish(message);
+        } catch (e) {
+            console.error('Error', e);
+        }
+    }
 
-        const message = await modify.getUpdater().message(data.message.id as string, data.user);
-        message.setEditor(message.getSender());
+    if(data.value === 'wordcloud') {
+        try {
+            const attachment = <IMessageAttachment>{imageUrl: `https://quickchart.io/wordcloud?text=${poll.options.join(" ")}&fontScale=50`}
+                    const wordCloudBuilder = modify.getCreator().startMessage()
+                        .setUsernameAlias(data.user.username)
+                        .setRoom(<IRoom>{...data.room})
+                        .addAttachment(attachment)
 
-        const block = modify.getCreator().getBlockBuilder();
-
-        const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
-
-        createPollBlocks(block, poll.question, poll.options, poll, showNames.value);
-
-        message.setBlocks(block);
-
-        return modify.getUpdater().finish(message);
-    } catch (e) {
-        console.error('Error', e);
+        return modify.getCreator().finish(wordCloudBuilder);
+        } catch( e ) {
+            console.error('Error', e);
+        }
+        
     }
 }

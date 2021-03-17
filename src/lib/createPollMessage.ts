@@ -3,7 +3,6 @@ import { RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket
 import {
     IUIKitViewSubmitIncomingInteraction,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
-
 import { IModalContext, IPoll } from '../definition';
 import { createPollBlocks } from './createPollBlocks';
 

@@ -16,6 +16,10 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
                         text: block.newPlainTextObject('Finish poll'),
                         value: 'finish',
                     },
+                    {
+                        text: block.newPlainTextObject('Generate Word Cloud'),
+                        value: 'wordcloud',
+                    }
                 ],
             },
         },
