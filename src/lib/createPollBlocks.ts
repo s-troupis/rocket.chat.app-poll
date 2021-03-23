@@ -77,4 +77,12 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
             ],
         });
     });
+
+    // Add text for total votes. TODO: Add text for time left
+    block.addDividerBlock(),
+    block.addContextBlock({
+        elements: [
+            block.newMarkdownTextObject(`${poll.totalVotes} votes`),
+        ],
+    });
 }
