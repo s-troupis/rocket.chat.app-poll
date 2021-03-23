@@ -31,6 +31,13 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
 
     block.addDividerBlock();
 
+    const voteQuantities = poll.votes.map(vote => vote.quantity)
+    
+    const maxVoteIndices = voteQuantities.reduce(function(ind: number[], el, i) { 
+        if (el === Math.max(...voteQuantities)) 
+            ind.push(i); 
+        return ind; 
+    }, []);  
     options.forEach((option, index) => {
         block.addSectionBlock({
             text: block.newPlainTextObject(option),
@@ -48,7 +55,7 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
             return;
         }
 
-        const graph = buildVoteGraph(poll.votes[index], poll.totalVotes);
+        const graph = buildVoteGraph(poll.votes[index], poll.totalVotes, maxVoteIndices.includes(index));
         block.addContextBlock({
             elements: [
                 block.newMarkdownTextObject(graph),
