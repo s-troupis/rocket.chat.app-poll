@@ -31,6 +31,15 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
 
     block.addDividerBlock();
 
+    const maxVoteQuantity = Math.max(...poll.votes.map(vote => vote.quantity))
+    // Forms array of option indices with maximum votes (more than 1 option can be max-voted)
+    const maxVoteIndices = poll.votes
+        .map(vote => vote.quantity)
+        .reduce((ind: number[], el, i) => {
+            if (el === maxVoteQuantity)
+                ind.push(i);
+            return ind;
+        }, []);
     options.forEach((option, index) => {
         block.addSectionBlock({
             text: block.newPlainTextObject(option),
@@ -48,7 +57,7 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
             return;
         }
 
-        const graph = buildVoteGraph(poll.votes[index], poll.totalVotes);
+        const graph = buildVoteGraph(poll.votes[index], poll.totalVotes, maxVoteIndices.includes(index));
         block.addContextBlock({
             elements: [
                 block.newMarkdownTextObject(graph),
@@ -69,5 +78,13 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
                 block.newMarkdownTextObject(voters),
             ],
         });
+    });
+
+    // Add text block for total votes
+    block.addDividerBlock(),
+    block.addContextBlock({
+        elements: [
+            block.newMarkdownTextObject(`${ poll.totalVotes } votes ${ poll.finished ? '| Final Results' : '' }`),
+        ],
     });
 }
