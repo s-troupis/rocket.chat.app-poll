@@ -75,6 +75,10 @@ export async function createPollModal({ id = '', question, persistence, data, mo
                             text: block.newPlainTextObject('Confidential vote'),
                             value: 'confidential',
                         },
+                        {
+                            text: block.newPlainTextObject('Mixed Visibility vote'),
+                            value: 'mixed',
+                        },
                     ],
                 }),
             ],

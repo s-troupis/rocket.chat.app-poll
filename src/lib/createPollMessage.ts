@@ -9,12 +9,25 @@ import { createPollBlocks } from './createPollBlocks';
 
 export async function createPollMessage(data: IUIKitViewSubmitIncomingInteraction, read: IRead, modify: IModify, persistence: IPersistence, uid: string) {
     const { view: { id } } = data;
-    const { state }: {
+    var { state }: {
         state?: any;
     } = data.view;
 
     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, id);
     const [record] = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
+    var anonymousOptions = []
+
+    // When createPollMessage is called from mixed visibility modal case
+    // the second-last view id contains slashcommand data
+    if((record as IUIKitViewSubmitIncomingInteraction).view) {
+        const testAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, (record as IUIKitViewSubmitIncomingInteraction).view.id);
+        const [test] = await read.getPersistenceReader().readByAssociation(testAssociation) as Array<IModalContext>;
+        record.threadId = test.threadId;
+        record.room = test.room;
+        // Extract anonymous options before state is modified
+        anonymousOptions = state.mixedVisibility.anonymousOptions
+        state = (record as IUIKitViewSubmitIncomingInteraction).view.state;
+    }
 
     if (!state.poll || !state.poll.question || state.poll.question.trim() === '') {
         throw { question: 'Please type your question here' };
@@ -72,12 +85,13 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             options,
             totalVotes: 0,
             votes: options.map(() => ({ quantity: 0, voters: [] })),
-            confidential: visibility === 'confidential',
+            visibility: visibility,
             singleChoice: mode === 'single',
+            anonymousOptions
         };
 
         const block = modify.getCreator().getBlockBuilder();
-        createPollBlocks(block, poll.question, options, poll, showNames.value);
+        createPollBlocks(block, poll.question, options, poll, showNames.value, poll.anonymousOptions);
 
         builder.setBlocks(block);
 

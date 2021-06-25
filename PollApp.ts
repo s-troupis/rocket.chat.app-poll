@@ -20,7 +20,7 @@ import { createPollModal } from './src/lib/createPollModal';
 import { finishPollMessage } from './src/lib/finishPollMessage';
 import { votePoll } from './src/lib/votePoll';
 import { PollCommand } from './src/PollCommand';
-
+import { createMixedVisibilityModal } from './src/lib/createMixedVisibilityModal';
 export class PollApp extends App implements IUIKitInteractionHandler {
 
     constructor(info: IAppInfo, logger: ILogger) {
@@ -30,35 +30,97 @@ export class PollApp extends App implements IUIKitInteractionHandler {
     public async executeViewSubmitHandler(context: UIKitViewSubmitInteractionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify) {
         const data = context.getInteractionData();
 
-        const { state }: {
-            state: {
-                poll: {
-                    question: string,
-                    [option: string]: string,
-                },
-                config?: {
-                    mode?: string,
-                    visibility?: string,
-                },
-            },
-        } = data.view as any;
+        const title = data.view.title.text;
 
-        if (!state) {
-            return context.getInteractionResponder().viewErrorResponse({
-                viewId: data.view.id,
-                errors: {
-                    question: 'Error creating poll',
-                },
-            });
-        }
+        switch(title) {
+            case 'Create a poll': {
+                const { state }: {
+                    state: {
+                        poll: {
+                            question: string,
+                            [option: string]: string,
+                        },
+                        config?: {
+                            mode?: string,
+                            visibility?: string,
+                        },
+                    },
+                } = data.view as any;
+        
+                if (!state) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: {
+                            question: 'Error creating poll',
+                        },
+                    });
+                }
 
-        try {
-            await createPollMessage(data, read, modify, persistence, data.user.id);
-        } catch (err) {
-            return context.getInteractionResponder().viewErrorResponse({
-                viewId: data.view.id,
-                errors: err,
-            });
+                if(state.config && state.config.visibility != "mixed") {
+                    try {
+                        await createPollMessage(data, read, modify, persistence, data.user.id);
+                    } catch (err) {
+                        return context.getInteractionResponder().viewErrorResponse({
+                            viewId: data.view.id,
+                            errors: err,
+                        });
+                    }
+                }
+                else {
+                    //Open mixed visibility modal
+                    try {
+                        const modal = await createMixedVisibilityModal({ question: state.poll.question, persistence, modify, data });
+                        await modify.getUiController().openModalView(modal, context.getInteractionData(), data.user);
+                        
+                        return {
+                            success: true,
+                        };
+
+                    } catch (err) {
+                        return context.getInteractionResponder().viewErrorResponse({
+                            viewId: data.view.id,
+                            errors: err,
+                        });
+                    }
+                }
+        
+                return {
+                    success: true,
+                };
+            }
+
+            case 'Select anonymous options': {
+                const { state }: {
+                    state: {
+                        mixedVisibility: {
+                        anonymousOptions: any
+                        }
+                    },
+                } = data.view as any;
+
+                if (!state) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: {
+                            question: 'Error building mixed visibility modal',
+                        },
+                    });
+                }
+
+                try {
+                    await createPollMessage(data, read, modify, persistence, data.user.id);
+                } catch (err) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: err,
+                    });
+                }
+        
+                return {
+                    success: true,
+                };
+            }
+
         }
 
         return {

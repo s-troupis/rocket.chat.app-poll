@@ -4,7 +4,7 @@ import { IPoll } from '../definition';
 import { buildVoteGraph } from './buildVoteGraph';
 import { buildVoters } from './buildVoters';
 
-export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean) {
+export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean, anonymousOptions: Array<string>) {
     block.addSectionBlock({
         text: block.newPlainTextObject(question),
         ...!poll.finished && {
@@ -64,7 +64,11 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
             ],
         });
 
-        if (poll.confidential) {
+        if (poll.visibility === "confidential") {
+            return;
+        }
+
+        if(anonymousOptions.includes(poll.options[index])) {
             return;
         }
 
