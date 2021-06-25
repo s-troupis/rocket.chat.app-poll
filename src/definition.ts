@@ -16,8 +16,9 @@ export interface IPoll {
     totalVotes: number;
     votes: Array<IVoter>;
     finished?: boolean;
-    confidential?: boolean;
+    visibility?: string;
     singleChoice?: boolean;
+    anonymousOptions: Array<string>
 }
 
 export interface IModalContext extends Partial<IUIKitBlockIncomingInteraction> {
