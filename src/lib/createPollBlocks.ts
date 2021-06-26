@@ -67,12 +67,7 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
         if (poll.visibility === "confidential") {
             return;
         }
-
-        if(anonymousOptions.includes(poll.options[index])) {
-            return;
-        }
-
-        const voters = buildVoters(poll.votes[index], showNames);
+        const voters = buildVoters(poll.votes[index], showNames, anonymousOptions.includes(poll.options[index]));
         if (!voters) {
             return;
         }
