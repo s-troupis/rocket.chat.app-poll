@@ -72,24 +72,24 @@ export async function finishPollMessage({
             .getEnvironmentReader()
             .getSettings()
             .getById("use-public-internet");
-            console.log("Use Internet Value = ", useInternet)
         createPollBlocks(
             block,
             poll.question,
             poll.options,
             poll,
-            showNames.value
+            showNames.value,
+            useInternet.value
         );
 
         message.setBlocks(block);
 
         modify.getUpdater().finish(message);
 
-        if (useInternet.value) {
+        if (poll.wordcloud && useInternet.value) {
             const attachment = <IMessageAttachment>{
                 imageUrl: `https://quickchart.io/wordcloud?text=${poll.options.join(
-                    " "
-                )}&fontScale=50`,
+                    ","
+                )}&fontScale=50&useWordList=true`,
             };
             const wordCloudBuilder = modify
                 .getCreator()

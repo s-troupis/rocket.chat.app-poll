@@ -4,7 +4,7 @@ import { IPoll } from '../definition';
 import { buildVoteGraph } from './buildVoteGraph';
 import { buildVoters } from './buildVoters';
 
-export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean) {
+export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean, useInternet: boolean) {
     block.addSectionBlock({
         text: block.newPlainTextObject(question),
         ...!poll.finished && {
@@ -15,10 +15,6 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
                     {
                         text: block.newPlainTextObject('Finish poll'),
                         value: 'finish',
-                    },
-                    {
-                        text: block.newPlainTextObject('Generate Word Cloud'),
-                        value: 'wordcloud',
                     }
                 ],
             },
@@ -85,7 +81,20 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
     });
 
     // Add text block for total votes
-    block.addDividerBlock(),
+    block.addDividerBlock()
+
+    // Word cloud when Internet access disabled
+    if(poll.finished && poll.wordcloud && !useInternet) {
+        const responseSummary = poll.votes.map((vote, index) => {
+            return `${poll.options[index]}(${vote.quantity})`
+        }).join(' ')
+        block.addContextBlock({
+            elements: [
+                block.newMarkdownTextObject(`Poll summary: ${responseSummary}`),
+            ],
+        });
+    }
+
     block.addContextBlock({
         elements: [
             block.newMarkdownTextObject(`${ poll.totalVotes } votes ${ poll.finished ? '| Final Results' : '' }`),

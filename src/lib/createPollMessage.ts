@@ -49,10 +49,11 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     }
 
     try {
-        const { config = { mode: 'multiple', visibility: 'open' } } = state;
-        const { mode = 'multiple', visibility = 'open' } = config;
+        const { config = { mode: 'multiple', visibility: 'open', wordcloud: 'disabled' } } = state;
+        const { mode = 'multiple', visibility = 'open', wordcloud = 'disabled' } = config;
 
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
+        const useInternet = await read.getEnvironmentReader().getSettings().getById('use-public-internet');
 
         const builder = modify.getCreator().startMessage()
             .setUsernameAlias((showNames.value && data.user.name) || data.user.username)
@@ -73,10 +74,11 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             votes: options.map(() => ({ quantity: 0, voters: [] })),
             confidential: visibility === 'confidential',
             singleChoice: mode === 'single',
+            wordcloud: wordcloud === 'enabled'
         };
 
         const block = modify.getCreator().getBlockBuilder();
-        createPollBlocks(block, poll.question, options, poll, showNames.value);
+        createPollBlocks(block, poll.question, options, poll, showNames.value, useInternet.value);
 
         builder.setBlocks(block);
 
