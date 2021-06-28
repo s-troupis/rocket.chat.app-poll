@@ -135,5 +135,14 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             public: true,
             packageValue: false,
         });
+        await configuration.settings.provideSetting({
+            id : 'use-public-internet',
+            i18nLabel: 'Use public Internet to access Quickchart for word cloud generation',
+            i18nDescription: 'When checked, display word cloud instead of response summary when word cloud enabled',
+            required: false,
+            type: SettingType.BOOLEAN,
+            public: true,
+            packageValue: false,
+        });
     }
 }
