@@ -89,7 +89,7 @@ export async function finishPollMessage({
             const attachment = <IMessageAttachment>{
                 imageUrl: `https://quickchart.io/wordcloud?text=${poll.options.join(
                     ","
-                )}&fontScale=50&useWordList=true`,
+                )}&fontScale=50&useWordList=true&rotation=0`,
             };
             const wordCloudBuilder = modify
                 .getCreator()
