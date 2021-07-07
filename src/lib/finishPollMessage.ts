@@ -68,28 +68,32 @@ export async function finishPollMessage({
             .getEnvironmentReader()
             .getSettings()
             .getById("use-user-name");
-        const useInternet = await read
+        const wordcloudAPI = await read
             .getEnvironmentReader()
             .getSettings()
-            .getById("use-public-internet");
+            .getById("wordcloud-api");
         createPollBlocks(
             block,
             poll.question,
             poll.options,
             poll,
             showNames.value,
-            useInternet.value
+            wordcloudAPI.value
         );
 
         message.setBlocks(block);
 
         modify.getUpdater().finish(message);
 
-        if (poll.wordcloud && useInternet.value) {
+        if (poll.wordcloud && wordcloudAPI.value) {
+            let wordList = [] as string[];
+            poll.options.map((option, index) => {
+                wordList = wordList.concat(
+                    Array(poll.votes[index].quantity).fill(option)
+                );
+            });
             const attachment = <IMessageAttachment>{
-                imageUrl: `https://quickchart.io/wordcloud?text=${poll.options.join(
-                    ","
-                )}&fontScale=50&useWordList=true&rotation=0`,
+                imageUrl: `${wordcloudAPI.value}?text=${wordList.join(" ")}`,
             };
             const wordCloudBuilder = modify
                 .getCreator()

@@ -137,13 +137,13 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             packageValue: false,
         });
         await configuration.settings.provideSetting({
-            id : 'use-public-internet',
-            i18nLabel: 'Use public Internet to access Quickchart for word cloud generation',
-            i18nDescription: 'When checked, display word cloud instead of response summary when word cloud enabled',
+            id : 'wordcloud-api',
+            i18nLabel: 'Wordcloud API endpoint to fetch wordclouds from',
+            i18nDescription: "When left blank, poll summary will be displayed on enabling wordcloud. See github.com/RonLek/wordcloud-api",
             required: false,
-            type: SettingType.BOOLEAN,
+            type: SettingType.STRING,
             public: true,
-            packageValue: false,
+            packageValue: "",
         });
     }
 }

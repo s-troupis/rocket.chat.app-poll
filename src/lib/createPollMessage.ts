@@ -53,7 +53,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         const { mode = 'multiple', visibility = 'open', wordcloud = 'disabled' } = config;
 
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
-        const useInternet = await read.getEnvironmentReader().getSettings().getById('use-public-internet');
+        const wordcloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
 
         const builder = modify.getCreator().startMessage()
             .setUsernameAlias((showNames.value && data.user.name) || data.user.username)
@@ -78,7 +78,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         };
 
         const block = modify.getCreator().getBlockBuilder();
-        createPollBlocks(block, poll.question, options, poll, showNames.value, useInternet.value);
+        createPollBlocks(block, poll.question, options, poll, showNames.value, wordcloudAPI.value);
 
         builder.setBlocks(block);
 

@@ -4,7 +4,7 @@ import { IPoll } from '../definition';
 import { buildVoteGraph } from './buildVoteGraph';
 import { buildVoters } from './buildVoters';
 
-export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean, useInternet: boolean) {
+export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean, wordCloud: boolean) {
     block.addSectionBlock({
         text: block.newPlainTextObject(question),
         ...!poll.finished && {
@@ -84,7 +84,7 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
     block.addDividerBlock()
 
     // Word cloud when Internet access disabled
-    if(poll.finished && poll.wordcloud && !useInternet) {
+    if(poll.finished && poll.wordcloud && !wordCloud) {
         const responseSummary = poll.votes.map((vote, index) => {
             return `${poll.options[index]}(${vote.quantity})`
         }).join(' ')
