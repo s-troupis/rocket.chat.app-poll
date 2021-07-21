@@ -31,10 +31,10 @@ export class PollApp extends App implements IUIKitInteractionHandler {
     public async executeViewSubmitHandler(context: UIKitViewSubmitInteractionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify) {
         const data = context.getInteractionData();
 
-        const title = data.view.title.text;
+        const id = data.view.id;
 
-        switch (title) {
-            case 'Create a poll': {
+        if (/create-poll-modal/i.test(id)) {
+
                 const { state }: {
                     state: {
                         poll: {
@@ -87,9 +87,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 return {
                     success: true,
                 };
-            }
+            } else if (/create-mixed-visibility-modal/.test(id)) {
 
-            case 'Select anonymous options': {
                 const { state }: {
                     state: {
                         mixedVisibility: {
@@ -120,8 +119,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     success: true,
                 };
             }
-
-        }
 
         return {
             success: true,

@@ -24,7 +24,7 @@ export async function createMixedVisibilityModal({
     data: IUIKitViewSubmitIncomingInteraction;
     modify: IModify;
 }): Promise<IUIKitModalViewParam> {
-    const viewId = id || uuid();
+    const viewId = id || `create-mixed-visibility-modal-${uuid()}`;
 
     const association = new RocketChatAssociationRecord(
         RocketChatAssociationModel.MISC,
