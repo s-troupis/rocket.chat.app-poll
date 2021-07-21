@@ -15,12 +15,13 @@ import {
     UIKitViewSubmitInteractionContext,
 } from '@rocket.chat/apps-engine/definition/uikit';
 
+import { pollVisibility } from './src/definition';
+import { createMixedVisibilityModal } from './src/lib/createMixedVisibilityModal';
 import { createPollMessage } from './src/lib/createPollMessage';
 import { createPollModal } from './src/lib/createPollModal';
 import { finishPollMessage } from './src/lib/finishPollMessage';
 import { votePoll } from './src/lib/votePoll';
 import { PollCommand } from './src/PollCommand';
-import { createMixedVisibilityModal } from './src/lib/createMixedVisibilityModal';
 export class PollApp extends App implements IUIKitInteractionHandler {
 
     constructor(info: IAppInfo, logger: ILogger) {
@@ -32,7 +33,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
         const title = data.view.title.text;
 
-        switch(title) {
+        switch (title) {
             case 'Create a poll': {
                 const { state }: {
                     state: {
@@ -46,7 +47,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         },
                     },
                 } = data.view as any;
-        
+
                 if (!state) {
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
@@ -56,7 +57,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     });
                 }
 
-                if(state.config && state.config.visibility != "mixed") {
+                if (state.config && state.config.visibility !== pollVisibility.mixed) {
                     try {
                         await createPollMessage(data, read, modify, persistence, data.user.id);
                     } catch (err) {
@@ -65,13 +66,12 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                             errors: err,
                         });
                     }
-                }
-                else {
-                    //Open mixed visibility modal
+                } else {
+                    // Open mixed visibility modal
                     try {
                         const modal = await createMixedVisibilityModal({ question: state.poll.question, persistence, modify, data });
                         await modify.getUiController().openModalView(modal, context.getInteractionData(), data.user);
-                        
+
                         return {
                             success: true,
                         };
@@ -83,7 +83,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         });
                     }
                 }
-        
+
                 return {
                     success: true,
                 };
@@ -93,8 +93,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 const { state }: {
                     state: {
                         mixedVisibility: {
-                        anonymousOptions: any
-                        }
+                        anonymousOptions: any,
+                        },
                     },
                 } = data.view as any;
 
@@ -115,7 +115,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         errors: err,
                     });
                 }
-        
+
                 return {
                     success: true,
                 };

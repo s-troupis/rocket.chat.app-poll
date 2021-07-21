@@ -11,7 +11,7 @@ const format = (num) => new Intl.NumberFormat('en-US', {
 export function buildVoteGraph(votes: IVoter, totalVotes: IPoll['totalVotes'], maxVoteIndex: boolean) {
     const percent = totalVotes === 0 ? 0 : votes.quantity / totalVotes;
 
-    const filled = maxVoteIndex ? '🟦': '⬛';
+    const filled = maxVoteIndex ? '🟦' : '⬛';
 
     const graphFilled = filled.repeat(Math.floor(percent * width));
     const graphEmpty = empty.repeat(width - Math.floor(percent * width));

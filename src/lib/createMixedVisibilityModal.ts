@@ -1,18 +1,18 @@
 import {
     IModify,
     IPersistence,
-} from "@rocket.chat/apps-engine/definition/accessors";
+} from '@rocket.chat/apps-engine/definition/accessors';
 import {
     RocketChatAssociationModel,
     RocketChatAssociationRecord,
-} from "@rocket.chat/apps-engine/definition/metadata";
-import { IUIKitModalViewParam } from "@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder";
+} from '@rocket.chat/apps-engine/definition/metadata';
+import { IUIKitModalViewParam } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
 
-import { uuid } from "./uuid";
-import { IUIKitViewSubmitIncomingInteraction } from "@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes";
+import { IUIKitViewSubmitIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
+import { uuid } from './uuid';
 
 export async function createMixedVisibilityModal({
-    id = "",
+    id = '',
     question,
     persistence,
     data,
@@ -28,7 +28,7 @@ export async function createMixedVisibilityModal({
 
     const association = new RocketChatAssociationRecord(
         RocketChatAssociationModel.MISC,
-        viewId
+        viewId,
     );
     await persistence.createWithAssociation(data, association);
 
@@ -39,22 +39,22 @@ export async function createMixedVisibilityModal({
     } = data.view;
 
     const options = Object.entries<any>(state.poll || {})
-        .filter(([key]) => key !== "question")
+        .filter(([key]) => key !== 'question')
         .map(([, option]) => option)
-        .filter((option) => option.trim() !== "");
+        .filter((option) => option.trim() !== '');
 
     const block = modify.getCreator().getBlockBuilder();
     block.addSectionBlock({
-        text: block.newMarkdownTextObject(question ? question : ""),
+        text: block.newMarkdownTextObject(question ? question : ''),
     });
 
     block
         .addActionsBlock({
-            blockId: "mixedVisibility",
+            blockId: 'mixedVisibility',
             elements: [
                 block.newMultiStaticElement({
-                    placeholder: block.newPlainTextObject("Multiple choices"),
-                    actionId: "anonymousOptions",
+                    placeholder: block.newPlainTextObject('Multiple choices'),
+                    actionId: 'anonymousOptions',
                     options: options.map((option) => {
                         return {
                             text: block.newPlainTextObject(option),
@@ -69,12 +69,12 @@ export async function createMixedVisibilityModal({
 
     return {
         id: viewId,
-        title: block.newPlainTextObject("Select anonymous options"),
+        title: block.newPlainTextObject('Select anonymous options'),
         submit: block.newButtonElement({
-            text: block.newPlainTextObject("Create"),
+            text: block.newPlainTextObject('Create'),
         }),
         close: block.newButtonElement({
-            text: block.newPlainTextObject("Dismiss"),
+            text: block.newPlainTextObject('Dismiss'),
         }),
         blocks: block.getBlocks(),
     };

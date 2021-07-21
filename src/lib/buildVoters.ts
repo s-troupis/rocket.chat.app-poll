@@ -14,5 +14,5 @@ export function buildVoters(votes: IVoter, showNames: boolean, anonymous: boolea
 
     const votesStr = votes.quantity === 1 ? 'vote' : 'votes';
 
-    return `${ votes.quantity } ${ votesStr } - ${ anonymous? "Anonymous" : votersNames(votes.voters, showNames) }`;
+    return `${ votes.quantity } ${ votesStr } - ${ anonymous ? 'Anonymous' : votersNames(votes.voters, showNames) }`;
 }
