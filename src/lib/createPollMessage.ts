@@ -64,7 +64,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
 
     try {
         const { config = { mode: 'multiple', visibility: pollVisibility.open, additionalChoices: 'disallowAddingChoices' } } = state;
-        const { mode = 'multiple', visibility = pollVisibility.open, additionalChoices = "disallowAddingChoices" } = config;
+        const { mode = 'multiple', visibility = pollVisibility.open, additionalChoices = 'disallowAddingChoices' } = config;
 
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
 
@@ -88,7 +88,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             visibility,
             singleChoice: mode === 'single',
             anonymousOptions,
-            allowAddingOptions: additionalChoices !== "disallowAddingChoices",
+            allowAddingOptions: additionalChoices !== 'disallowAddingChoices',
         };
 
         const block = modify.getCreator().getBlockBuilder();

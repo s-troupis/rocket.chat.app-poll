@@ -1,43 +1,51 @@
 import {
+    ILogger,
     IModify,
     IPersistence,
     IRead,
-} from "@rocket.chat/apps-engine/definition/accessors";
+} from '@rocket.chat/apps-engine/definition/accessors';
 import {
     RocketChatAssociationModel,
     RocketChatAssociationRecord,
-} from "@rocket.chat/apps-engine/definition/metadata";
+} from '@rocket.chat/apps-engine/definition/metadata';
 
-import { createPollBlocks } from "./createPollBlocks";
-import { getPoll } from "./getPoll";
+import { createPollBlocks } from './createPollBlocks';
+import { getPoll } from './getPoll';
 
 export async function updatePollMessage({
     data,
     read,
     persistence,
     modify,
+    logger,
 }: {
     data;
     read: IRead;
     persistence: IPersistence;
     modify: IModify;
+    logger: ILogger;
 }) {
-    const poll = await getPoll(String(data.view.id), read);
+    const poll = await getPoll(String(data.view.id).replace('add-option-modal-', ''), read);
 
     if (!poll) {
-        throw new Error("no such poll");
+        throw new Error('no such poll');
     }
 
     if (poll.finished) {
-        throw new Error("this poll is already finished");
+        throw new Error('this poll is already finished');
+    }
+
+    const {
+        state,
+    }: {
+        state?: any;
+    } = data.view;
+
+    if (!state.addOption || !state.addOption.option) {
+        throw {option: 'Please type your option here'};
     }
 
     try {
-        const {
-            state,
-        }: {
-            state?: any;
-        } = data.view;
 
         poll.options.push(state.addOption.option);
         poll.votes.push({ quantity: 0, voters: [] });
@@ -52,26 +60,27 @@ export async function updatePollMessage({
         const showNames = await read
             .getEnvironmentReader()
             .getSettings()
-            .getById("use-user-name");
+            .getById('use-user-name');
 
         createPollBlocks(
             block,
             poll.question,
             poll.options,
             poll,
-            showNames.value
+            showNames.value,
+            poll.anonymousOptions,
         );
 
         message.setBlocks(block);
 
         const association = new RocketChatAssociationRecord(
             RocketChatAssociationModel.MISC,
-            poll.msgId
+            poll.msgId,
         );
         persistence.updateByAssociation(association, poll);
 
         return modify.getUpdater().finish(message);
     } catch (e) {
-        console.error("Error", e);
+        logger.error('Error', e);
     }
 }

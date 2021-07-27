@@ -112,10 +112,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 try {
                     await createPollMessage(data, read, modify, persistence, data.user.id);
                 } catch (err) {
-
-                try {
-                    await createPollMessage(data, read, modify, persistence, data.user.id);
-                } catch (err) {
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
                         errors: err,
@@ -125,28 +121,28 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 return {
                     success: true,
                 };
-            }
             } else if (/add-option-modal/.test(id)) {
                 const { state }: {
                     state: {
                         addOption: {
                             option: string,
-                        }
+                        },
                     },
                 } = data.view as any;
                 if (!state) {
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
                         errors: {
-                            question: 'Error adding option',
+                            option: 'Error adding option',
                         },
                     });
                 }
 
                 try {
-                    await updatePollMessage({data, read, modify, persistence});
+                    const logger = this.getLogger();
+                    await updatePollMessage({data, read, modify, persistence, logger});
                 } catch (err) {
-                    console.log(err);
+                    this.getLogger().log(err);
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
                         errors: err,
@@ -158,7 +154,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 };
             }
 
-    return {
+        return {
         success: true,
     };
 }

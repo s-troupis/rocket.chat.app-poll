@@ -1,15 +1,15 @@
-import { IModify, IRead } from "@rocket.chat/apps-engine/definition/accessors";
+import { IModify, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import {
     RocketChatAssociationModel,
     RocketChatAssociationRecord,
-} from "@rocket.chat/apps-engine/definition/metadata";
-import { IUIKitModalViewParam } from "@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder";
+} from '@rocket.chat/apps-engine/definition/metadata';
+import { IUIKitModalViewParam } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
 
-import { uuid } from "./uuid";
-import { IModalContext, IPoll } from "../definition";
+import { IModalContext, IPoll } from '../definition';
+import { uuid } from './uuid';
 
 export async function addOptionModal({
-    id = "",
+    id = '',
     read,
     modify,
 }: {
@@ -17,12 +17,16 @@ export async function addOptionModal({
     read: IRead;
     modify: IModify;
 }): Promise<IUIKitModalViewParam> {
-    const viewId = id || uuid();
+    let viewId = id || uuid();
 
     const association = new RocketChatAssociationRecord(
         RocketChatAssociationModel.MISC,
-        viewId
+        viewId,
     );
+
+    // Attaching prefix to viewId to avoid collision with other views
+    viewId = `add-option-modal-${viewId}`;
+
     const [record] = (await read
         .getPersistenceReader()
         .readByAssociation(association)) as Array<IModalContext>;
@@ -33,23 +37,23 @@ export async function addOptionModal({
     });
 
     block.addInputBlock({
-        blockId: "addOption",
+        blockId: 'addOption',
         optional: false,
         element: block.newPlainTextInputElement({
             actionId: `option`,
-            placeholder: block.newPlainTextObject("Insert an option"),
+            placeholder: block.newPlainTextObject('Insert an option'),
         }),
-        label: block.newPlainTextObject(""),
+        label: block.newPlainTextObject(''),
     });
 
     return {
         id: viewId,
-        title: block.newPlainTextObject("Add Option"),
+        title: block.newPlainTextObject('Add Option'),
         submit: block.newButtonElement({
-            text: block.newPlainTextObject("Add"),
+            text: block.newPlainTextObject('Add'),
         }),
         close: block.newButtonElement({
-            text: block.newPlainTextObject("Dismiss"),
+            text: block.newPlainTextObject('Dismiss'),
         }),
         blocks: block.getBlocks(),
     };
