@@ -48,6 +48,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             case '1-5':
                 options = Array.from({length: 5}, (_, i) => "" + (i + 1));
                 break;
+            case '1-10':
+                options = Array.from({length: 10}, (_, i) => "" + (i + 1));
+                break;
             default:
                 throw new Error('Invalid Template Type')
         }
