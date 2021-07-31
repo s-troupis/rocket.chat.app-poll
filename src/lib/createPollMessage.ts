@@ -37,28 +37,43 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         throw new Error('Invalid room');
     }
 
-    const options = Object.entries<any>(state.poll || {})
-        .filter(([key]) => key !== 'question')
-        .map(([, option]) => option)
-        .filter((option) => option.trim() !== '');
+    // Declare options as an array of string
+    let options = [] as Array<string>;
 
-    if (!options.length) {
-        throw {
-            'option-0': 'Please provide some options',
-            'option-1': 'Please provide some options',
-        };
-    }
+    if(state.template) {
+        switch(state.template.type) {
+            case 'over-under':
+               options = ["Overrated", "Appropriately Rated", "Never Tried", "Underrated"]
+               break;
 
-    if (options.length === 1) {
-        if (!state.poll['option-0'] || state.poll['option-0'] === '') {
+            default:
+                throw new Error('Invalid Template Type')
+        }
+    } else {
+
+        options = Object.entries<any>(state.poll || {})
+            .filter(([key]) => key !== 'question')
+            .map(([, option]) => option)
+            .filter((option) => option.trim() !== '');
+
+        if (!options.length) {
             throw {
-                'option-0': 'Please provide one more option',
+                'option-0': 'Please provide some options',
+                'option-1': 'Please provide some options',
             };
         }
-        if (!state.poll['option-1'] || state.poll['option-1'] === '') {
-            throw {
-                'option-1': 'Please provide one more option',
-            };
+
+        if (options.length === 1) {
+            if (!state.poll['option-0'] || state.poll['option-0'] === '') {
+                throw {
+                    'option-0': 'Please provide one more option',
+                };
+            }
+            if (!state.poll['option-1'] || state.poll['option-1'] === '') {
+                throw {
+                    'option-1': 'Please provide one more option',
+                };
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 import { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import { ISlashCommand, SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { createPollModal } from './lib/createPollModal';
+import { createTemplateModal } from './lib/createTemplateModal';
 
 export class PollCommand implements ISlashCommand {
     public command = 'poll';
@@ -11,17 +12,34 @@ export class PollCommand implements ISlashCommand {
     public async executor(context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void> {
         const triggerId = context.getTriggerId();
 
+        const [subcommand] = context.getArguments();
+
+        console.log("Subcommand = ", subcommand);
+
         const data = {
             room: (context.getRoom() as any).value,
             threadId: context.getThreadId(),
         };
 
-        const question = context.getArguments().join(' ');
+        if (subcommand === 'template') {
 
-        if (triggerId) {
-            const modal = await createPollModal({ question, persistence: persis, modify, data });
+            const question = context.getArguments().slice(1).join(' ');
 
-            await modify.getUiController().openModalView(modal, { triggerId }, context.getSender());
+            if (triggerId) {
+                const modal = await createTemplateModal({ question, persistence: persis, modify, data });
+
+                await modify.getUiController().openModalView(modal, { triggerId }, context.getSender());
+            }
+            
+        } else {
+
+            const question = context.getArguments().join(' ');
+
+            if (triggerId) {
+                const modal = await createPollModal({ question, persistence: persis, modify, data });
+
+                await modify.getUiController().openModalView(modal, { triggerId }, context.getSender());
+            }
         }
     }
 }
