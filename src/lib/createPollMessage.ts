@@ -40,25 +40,25 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     // Declare options as an array of string
     let options = [] as Array<string>;
 
-    if(state.template) {
-        switch(state.template.type) {
+    if (state.template) {
+        switch (state.template.type) {
             case 'over-under':
-               options = ["Overrated", "Appropriately Rated", "Never Tried", "Underrated"]
+               options = ['Overrated', 'Appropriately Rated', 'Never Tried', 'Underrated'];
                break;
             case '1-to-5':
-                options = Array.from({length: 5}, (_, i) => "" + (i + 1));
+                options = Array.from({length: 5}, (_, i) => '' + (i + 1));
                 break;
             case '1-to-10':
-                options = Array.from({length: 10}, (_, i) => "" + (i + 1));
+                options = Array.from({length: 10}, (_, i) => '' + (i + 1));
                 break;
             case 'agree-disagree':
-                options = ["Agree", "Disagree"];
+                options = ['Agree', 'Disagree'];
                 break;
             case 'emoji-rank':
-                options = ["🤩 Great", "🙂 Good", "😐 Neutral", "🙁 Bad", "😢 Awful"];
+                options = ['🤩 Great', '🙂 Good', '😐 Neutral', '🙁 Bad', '😢 Awful'];
                 break;
             default:
-                throw new Error('Invalid Template Type')
+                throw new Error('Invalid Template Type');
         }
     } else {
 

@@ -59,8 +59,7 @@ export async function createTemplateModal({ id = '', question, persistence, data
             ],
         });
 
-
-        block
+    block
         .addActionsBlock({
             blockId: 'config',
             elements: [
@@ -94,7 +93,7 @@ export async function createTemplateModal({ id = '', question, persistence, data
                         },
                     ],
                 })],
-            })
+            });
 
     return {
         id: viewId,

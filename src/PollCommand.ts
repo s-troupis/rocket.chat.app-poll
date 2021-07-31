@@ -14,8 +14,6 @@ export class PollCommand implements ISlashCommand {
 
         const [subcommand] = context.getArguments();
 
-        console.log("Subcommand = ", subcommand);
-
         const data = {
             room: (context.getRoom() as any).value,
             threadId: context.getThreadId(),
@@ -30,7 +28,7 @@ export class PollCommand implements ISlashCommand {
 
                 await modify.getUiController().openModalView(modal, { triggerId }, context.getSender());
             }
-            
+
         } else {
 
             const question = context.getArguments().join(' ');
