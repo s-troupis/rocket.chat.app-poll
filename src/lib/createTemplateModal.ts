@@ -46,6 +46,10 @@ export async function createTemplateModal({ id = '', question, persistence, data
                             text: block.newPlainTextObject('1-10 Poll'),
                             value: '1-10',
                         },
+                        {
+                            text: block.newPlainTextObject('Agree/Disagree Poll'),
+                            value: 'agree-disagree',
+                        },
                     ],
                 }),
             ],

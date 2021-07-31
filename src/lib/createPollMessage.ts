@@ -51,6 +51,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             case '1-10':
                 options = Array.from({length: 10}, (_, i) => "" + (i + 1));
                 break;
+            case 'agree-disagree':
+                options = ["Agree", "Disagree"];
+                break;
             default:
                 throw new Error('Invalid Template Type')
         }
