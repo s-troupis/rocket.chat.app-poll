@@ -38,6 +38,10 @@ export async function createTemplateModal({ id = '', question, persistence, data
                             text: block.newPlainTextObject('Overrated/Underrated Poll'),
                             value: 'over-under',
                         },
+                        {
+                            text: block.newPlainTextObject('1-5 Poll'),
+                            value: '1-5',
+                        },
                     ],
                 }),
             ],

@@ -45,7 +45,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             case 'over-under':
                options = ["Overrated", "Appropriately Rated", "Never Tried", "Underrated"]
                break;
-
+            case '1-5':
+                options = Array.from({length: 5}, (_, i) => "" + (i + 1));
+                break;
             default:
                 throw new Error('Invalid Template Type')
         }
