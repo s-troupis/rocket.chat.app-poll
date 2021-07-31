@@ -39,16 +39,20 @@ export async function createTemplateModal({ id = '', question, persistence, data
                             value: 'over-under',
                         },
                         {
-                            text: block.newPlainTextObject('1-5 Poll'),
-                            value: '1-5',
+                            text: block.newPlainTextObject('1-to-5 Poll'),
+                            value: '1-to-5',
                         },
                         {
-                            text: block.newPlainTextObject('1-10 Poll'),
-                            value: '1-10',
+                            text: block.newPlainTextObject('1-to-10 Poll'),
+                            value: '1-to-10',
                         },
                         {
                             text: block.newPlainTextObject('Agree/Disagree Poll'),
                             value: 'agree-disagree',
+                        },
+                        {
+                            text: block.newPlainTextObject('Emoji Rank Poll'),
+                            value: 'emoji-rank',
                         },
                     ],
                 }),
