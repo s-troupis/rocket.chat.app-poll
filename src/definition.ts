@@ -18,6 +18,10 @@ export interface IPoll {
     finished?: boolean;
     confidential?: boolean;
     singleChoice?: boolean;
+    liveId?: string;
+    pollIndex?: number;
+    totalLivePolls?: number;
+    activeLivePoll?: boolean;
 }
 
 export interface IModalContext extends Partial<IUIKitBlockIncomingInteraction> {
