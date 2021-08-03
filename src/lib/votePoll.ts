@@ -5,11 +5,13 @@ import { createPollBlocks } from './createPollBlocks';
 import { getPoll } from './getPoll';
 import { storeVote } from './storeVote';
 
-export async function votePoll({ data, read, persistence, modify }: {
+export async function votePoll({ data, read, persistence, modify, pollIndex, totalPolls }: {
     data: IUIKitBlockIncomingInteraction,
     read: IRead,
     persistence: IPersistence,
     modify: IModify,
+    pollIndex?: number,
+    totalPolls?: number
 }) {
     if (!data.message) {
         return {
