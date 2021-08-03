@@ -80,6 +80,19 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
         });
     });
 
+    // Next Poll Button if live poll
+    if (poll.pollIndex != undefined && poll.totalLivePolls && (poll.pollIndex < poll.totalLivePolls - 1) && poll.activeLivePoll) {
+        block
+        .addActionsBlock({
+            elements: [
+                block.newButtonElement({
+                    actionId: 'nextPoll',
+                    text: block.newPlainTextObject('Next Poll'),
+                }),
+            ],
+        });
+    }
+
     // Add text block for total votes
     block.addDividerBlock(),
     block.addContextBlock({
