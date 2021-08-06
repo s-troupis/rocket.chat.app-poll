@@ -1,10 +1,10 @@
 import { BlockBuilder, BlockElementType } from '@rocket.chat/apps-engine/definition/uikit';
 
-import { IPoll } from '../definition';
+import { IPoll, pollVisibility } from '../definition';
 import { buildVoteGraph } from './buildVoteGraph';
 import { buildVoters } from './buildVoters';
 
-export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean) {
+export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean, anonymousOptions: Array<string>) {
     block.addSectionBlock({
         text: block.newPlainTextObject(question),
         ...!poll.finished && {
@@ -31,13 +31,14 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
 
     block.addDividerBlock();
 
-    const maxVoteQuantity = Math.max(...poll.votes.map(vote => vote.quantity))
+    const maxVoteQuantity = Math.max(...poll.votes.map((vote) => vote.quantity));
     // Forms array of option indices with maximum votes (more than 1 option can be max-voted)
     const maxVoteIndices = poll.votes
-        .map(vote => vote.quantity)
-        .reduce((ind: number[], el, i) => {
-            if (el === maxVoteQuantity)
+        .map((vote) => vote.quantity)
+        .reduce((ind: Array<number>, el, i) => {
+            if (el === maxVoteQuantity) {
                 ind.push(i);
+            }
             return ind;
         }, []);
     options.forEach((option, index) => {
@@ -64,11 +65,10 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
             ],
         });
 
-        if (poll.confidential) {
+        if (poll.visibility === pollVisibility.confidential) {
             return;
         }
-
-        const voters = buildVoters(poll.votes[index], showNames);
+        const voters = buildVoters(poll.votes[index], showNames, anonymousOptions.includes(poll.options[index]));
         if (!voters) {
             return;
         }

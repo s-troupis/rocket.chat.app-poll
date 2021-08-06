@@ -15,12 +15,13 @@ import {
     UIKitViewSubmitInteractionContext,
 } from '@rocket.chat/apps-engine/definition/uikit';
 
+import { pollVisibility } from './src/definition';
+import { createMixedVisibilityModal } from './src/lib/createMixedVisibilityModal';
 import { createPollMessage } from './src/lib/createPollMessage';
 import { createPollModal } from './src/lib/createPollModal';
 import { finishPollMessage } from './src/lib/finishPollMessage';
 import { votePoll } from './src/lib/votePoll';
 import { PollCommand } from './src/PollCommand';
-
 export class PollApp extends App implements IUIKitInteractionHandler {
 
     constructor(info: IAppInfo, logger: ILogger) {
@@ -30,36 +31,94 @@ export class PollApp extends App implements IUIKitInteractionHandler {
     public async executeViewSubmitHandler(context: UIKitViewSubmitInteractionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify) {
         const data = context.getInteractionData();
 
-        const { state }: {
-            state: {
-                poll: {
-                    question: string,
-                    [option: string]: string,
-                },
-                config?: {
-                    mode?: string,
-                    visibility?: string,
-                },
-            },
-        } = data.view as any;
+        const id = data.view.id;
 
-        if (!state) {
-            return context.getInteractionResponder().viewErrorResponse({
-                viewId: data.view.id,
-                errors: {
-                    question: 'Error creating poll',
-                },
-            });
-        }
+        if (/create-poll-modal/i.test(id)) {
 
-        try {
-            await createPollMessage(data, read, modify, persistence, data.user.id);
-        } catch (err) {
-            return context.getInteractionResponder().viewErrorResponse({
-                viewId: data.view.id,
-                errors: err,
-            });
-        }
+                const { state }: {
+                    state: {
+                        poll: {
+                            question: string,
+                            [option: string]: string,
+                        },
+                        config?: {
+                            mode?: string,
+                            visibility?: string,
+                        },
+                    },
+                } = data.view as any;
+
+                if (!state) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: {
+                            question: 'Error creating poll',
+                        },
+                    });
+                }
+
+                if (state.config && state.config.visibility !== pollVisibility.mixed) {
+                    try {
+                        await createPollMessage(data, read, modify, persistence, data.user.id);
+                    } catch (err) {
+                        return context.getInteractionResponder().viewErrorResponse({
+                            viewId: data.view.id,
+                            errors: err,
+                        });
+                    }
+                } else {
+                    // Open mixed visibility modal
+                    try {
+                        const modal = await createMixedVisibilityModal({ question: state.poll.question, persistence, modify, data });
+                        await modify.getUiController().openModalView(modal, context.getInteractionData(), data.user);
+
+                        return {
+                            success: true,
+                        };
+
+                    } catch (err) {
+                        return context.getInteractionResponder().viewErrorResponse({
+                            viewId: data.view.id,
+                            errors: err,
+                        });
+                    }
+                }
+
+                return {
+                    success: true,
+                };
+            } else if (/create-mixed-visibility-modal/.test(id)) {
+
+                const { state }: {
+                    state: {
+                        mixedVisibility: {
+                        anonymousOptions: any,
+                        },
+                    },
+                } = data.view as any;
+
+                if (!state) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: {
+                            question: 'Error building mixed visibility modal',
+                        },
+                    });
+                }
+
+                try {
+                    await createPollMessage(data, read, modify, persistence, data.user.id);
+                } catch (err) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: err,
+                    });
+                }
+
+                return {
+                    success: true,
+                };
+            }
 
         return {
             success: true,
