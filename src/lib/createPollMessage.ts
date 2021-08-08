@@ -40,8 +40,8 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     // Declare options as an array of string
     let options = [] as Array<string>;
 
-    if (state.template) {
-        switch (state.template.type) {
+    if (state.config.mode !== 'multiple' && state.config.mode !== 'single') {
+        switch (state.config.mode) {
             case 'over-under':
                options = ['Overrated', 'Appropriately Rated', 'Never Tried', 'Underrated'];
                break;
@@ -58,7 +58,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
                 options = ['🤩 Great', '🙂 Good', '😐 Neutral', '🙁 Bad', '😢 Awful'];
                 break;
             default:
-                throw new Error('Invalid Template Type');
+                throw { 'mode': 'Invalid mode' };
         }
     } else {
 
@@ -112,7 +112,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             totalVotes: 0,
             votes: options.map(() => ({ quantity: 0, voters: [] })),
             visibility,
-            singleChoice: mode === 'single',
+            singleChoice: mode !== 'multiple',
             anonymousOptions,
         };
 
