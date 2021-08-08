@@ -80,6 +80,19 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
         });
     });
 
+    // Add Option button
+    if (!poll.finished && poll.allowAddingOptions) {
+        block
+        .addActionsBlock({
+            elements: [
+                block.newButtonElement({
+                    actionId: 'addUserChoice',
+                    text: block.newPlainTextObject('Add option'),
+                }),
+            ],
+        });
+    }
+
     // Add text block for total votes
     block.addDividerBlock(),
     block.addContextBlock({

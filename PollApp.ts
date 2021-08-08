@@ -14,12 +14,14 @@ import {
     UIKitBlockInteractionContext,
     UIKitViewSubmitInteractionContext,
 } from '@rocket.chat/apps-engine/definition/uikit';
+import { addOptionModal } from './src/lib/addOptionModal';
 
 import { pollVisibility } from './src/definition';
 import { createMixedVisibilityModal } from './src/lib/createMixedVisibilityModal';
 import { createPollMessage } from './src/lib/createPollMessage';
 import { createPollModal } from './src/lib/createPollModal';
 import { finishPollMessage } from './src/lib/finishPollMessage';
+import { updatePollMessage } from './src/lib/updatePollMessage';
 import { votePoll } from './src/lib/votePoll';
 import { PollCommand } from './src/PollCommand';
 export class PollApp extends App implements IUIKitInteractionHandler {
@@ -44,6 +46,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         config?: {
                             mode?: string,
                             visibility?: string,
+                            additionalChoices?: string;
                         },
                     },
                 } = data.view as any;
@@ -118,12 +121,43 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 return {
                     success: true,
                 };
+            } else if (/add-option-modal/.test(id)) {
+                const { state }: {
+                    state: {
+                        addOption: {
+                            option: string,
+                        },
+                    },
+                } = data.view as any;
+                if (!state) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: {
+                            option: 'Error adding option',
+                        },
+                    });
+                }
+
+                try {
+                    const logger = this.getLogger();
+                    await updatePollMessage({data, read, modify, persistence, logger});
+                } catch (err) {
+                    this.getLogger().log(err);
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: err,
+                    });
+                }
+
+                return {
+                    success: true,
+                };
             }
 
         return {
-            success: true,
-        };
-    }
+        success: true,
+    };
+}
 
     public async executeBlockActionHandler(context: UIKitBlockInteractionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify) {
         const data = context.getInteractionData();
@@ -149,6 +183,12 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 const modal = await createPollModal({ id: data.container.id, data, persistence, modify, options: parseInt(String(data.value), 10) });
 
                 return context.getInteractionResponder().updateModalViewResponse(modal);
+            }
+
+            case 'addUserChoice': {
+                const modal = await addOptionModal({ id: data.container.id, read, modify });
+
+                return context.getInteractionResponder().openModalViewResponse(modal);
             }
 
             case 'finish': {

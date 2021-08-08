@@ -25,6 +25,7 @@ export interface IPoll {
     visibility?: pollVisibility;
     singleChoice?: boolean;
     anonymousOptions: Array<string>;
+    allowAddingOptions?: boolean;
 }
 
 export interface IModalContext extends Partial<IUIKitBlockIncomingInteraction> {
