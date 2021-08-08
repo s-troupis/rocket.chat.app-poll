@@ -58,7 +58,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
                 options = ['🤩 Great', '🙂 Good', '😐 Neutral', '🙁 Bad', '😢 Awful'];
                 break;
             default:
-                throw { 'mode': 'Invalid mode' };
+                throw { mode: 'Invalid mode' };
         }
     } else {
 

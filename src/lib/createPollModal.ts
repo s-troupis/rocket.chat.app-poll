@@ -12,7 +12,7 @@ export async function createPollModal({ id = '', question, persistence, data, mo
     data: IModalContext,
     modify: IModify,
     options?: number,
-    mode?: string
+    mode?: string,
 }): Promise<IUIKitModalViewParam> {
     const viewId = id || `create-poll-modal-${uuid()}`;
 
@@ -28,7 +28,7 @@ export async function createPollModal({ id = '', question, persistence, data, mo
     .addDividerBlock();
 
     // If mode is multiple, single or undefined show option fields
-    if(mode === 'multiple' || mode === 'single' || !mode) {
+    if (mode === 'multiple' || mode === 'single' || !mode) {
         for (let i = 0; i < options; i++) {
             block.addInputBlock({
                 blockId: 'poll',
@@ -49,7 +49,7 @@ export async function createPollModal({ id = '', question, persistence, data, mo
                 block.newStaticSelectElement({
                     placeholder: block.newPlainTextObject('Multiple choices'),
                     actionId: 'mode',
-                    initialValue: `${mode? mode : 'multiple'}`,
+                    initialValue: `${mode ? mode : 'multiple'}`,
                     options: [
                         {
                             text: block.newPlainTextObject('Multiple choices'),
