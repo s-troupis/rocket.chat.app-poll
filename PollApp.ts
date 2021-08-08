@@ -175,6 +175,12 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                          );
                 }
             }
+
+            case 'mode': {
+                const modal = await createPollModal({ id: data.container.id, data, persistence, modify, mode: data.value });
+
+                return context.getInteractionResponder().updateModalViewResponse(modal);
+            }
         }
 
         return {
