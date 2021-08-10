@@ -16,6 +16,7 @@ import {
 } from '@rocket.chat/apps-engine/definition/uikit';
 import { createLivePollMessage } from './src/lib/createLivePollMessage';
 import { createLivePollModal } from './src/lib/createLivePollModal';
+import { addOptionModal } from './src/lib/addOptionModal';
 
 import { pollVisibility } from './src/definition';
 import { createMixedVisibilityModal } from './src/lib/createMixedVisibilityModal';
@@ -23,6 +24,7 @@ import { createPollMessage } from './src/lib/createPollMessage';
 import { createPollModal } from './src/lib/createPollModal';
 import { finishPollMessage } from './src/lib/finishPollMessage';
 import { nextPollMessage } from './src/lib/nextPollMessage';
+import { updatePollMessage } from './src/lib/updatePollMessage';
 import { votePoll } from './src/lib/votePoll';
 import { PollCommand } from './src/PollCommand';
 export class PollApp extends App implements IUIKitInteractionHandler {
@@ -38,18 +40,23 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
         if (/create-poll-modal/i.test(id)) {
 
-            const { state }: {
-                state: {
-                    poll: {
-                        question: string,
-                        [option: string]: string,
+                const { state }: {
+                    state: {
+                        poll: {
+                            question: string,
+                            [option: string]: string,
+                        },
+                        config?: {
+                            mode?: string,
+                            visibility?: string,
+                            additionalChoices?: string;
+                        },
                     },
                     config?: {
                         mode?: string,
                         visibility?: string,
                     },
-                },
-            } = data.view as any;
+                } = data.view as any;
 
             if (!state) {
                 return context.getInteractionResponder().viewErrorResponse({
@@ -188,14 +195,43 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         errors: err,
                     });
         }
+            } else if (/add-option-modal/.test(id)) {
+                const { state }: {
+                    state: {
+                        addOption: {
+                            option: string,
+                        },
+                    },
+                } = data.view as any;
+                if (!state) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: {
+                            option: 'Error adding option',
+                        },
+                    });
+                }
+
+                try {
+                    const logger = this.getLogger();
+                    await updatePollMessage({data, read, modify, persistence, logger});
+                } catch (err) {
+                    this.getLogger().log(err);
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: err,
+                    });
                 }
 
                 return {
                     success: true,
                 };
-            
-}
+            }
 
+        return {
+        success: true,
+    };
+}
 
     public async executeBlockActionHandler(context: UIKitBlockInteractionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify) {
         const data = context.getInteractionData();
@@ -252,6 +288,11 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                          );
                 }
                 break;
+            }
+            case 'addUserChoice': {
+                const modal = await addOptionModal({ id: data.container.id, read, modify });
+
+                return context.getInteractionResponder().openModalViewResponse(modal);
             }
 
             case 'finish': {

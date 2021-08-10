@@ -81,6 +81,21 @@ export async function createPollModal({ id = '', question, persistence, data, mo
                         },
                     ],
                 }),
+                block.newStaticSelectElement({
+                    placeholder: block.newPlainTextObject('Disallow Adding Choices'),
+                    actionId: 'additionalChoices',
+                    initialValue: 'disallowAddingChoices',
+                    options: [
+                        {
+                            text: block.newPlainTextObject('Allow Adding Choices'),
+                            value: 'allowAddingChoices',
+                        },
+                        {
+                            text: block.newPlainTextObject('Disallow Adding Choices'),
+                            value: 'disallowAddingChoices',
+                        },
+                    ],
+                }),
             ],
         });
 

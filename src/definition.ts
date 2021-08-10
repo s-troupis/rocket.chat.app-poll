@@ -30,6 +30,7 @@ export interface IPoll {
     activeLivePoll?: boolean;
     livePollEndTime?: string
     anonymousOptions: Array<string>;
+    allowAddingOptions?: boolean;
 }
 
 export interface IModalContext extends Partial<IUIKitBlockIncomingInteraction> {
