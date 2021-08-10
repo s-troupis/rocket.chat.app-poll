@@ -12,6 +12,7 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
 
     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, id);
     const [record] = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
+    let anonymousOptions = [];
 
     if (!record.room) {
         throw new Error('Invalid room');
@@ -47,12 +48,13 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
             options,
             totalVotes: 0,
             votes: options.map(() => ({ quantity: 0, voters: [] })),
-            confidential: visibility === 'confidential',
+            visibility,
             singleChoice: mode === 'single',
             liveId: id,
             pollIndex: pollIndex,
             totalLivePolls: record["totalPolls"],
             activeLivePoll: true,
+            anonymousOptions
         };
 
         let livePollEndTime = new Date();
@@ -61,7 +63,7 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
         poll.livePollEndTime = livePollEndTime.toUTCString();
 
         const block = modify.getCreator().getBlockBuilder();
-        createPollBlocks(block, poll.question, options, poll, showNames.value);
+        createPollBlocks(block, poll.question, options, poll, showNames.value, poll.anonymousOptions);
 
         builder.setBlocks(block);
 

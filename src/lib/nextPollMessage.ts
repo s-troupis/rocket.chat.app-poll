@@ -53,7 +53,7 @@ export async function nextPollMessage({ data, read, persistence, modify }: {
 
             const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
 
-            createPollBlocks(block, poll.question, poll.options, poll, showNames.value);
+            createPollBlocks(block, poll.question, poll.options, poll, showNames.value, poll.anonymousOptions);
 
             message.setBlocks(block);
 

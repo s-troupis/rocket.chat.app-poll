@@ -17,13 +17,14 @@ import {
 import { createLivePollMessage } from './src/lib/createLivePollMessage';
 import { createLivePollModal } from './src/lib/createLivePollModal';
 
+import { pollVisibility } from './src/definition';
+import { createMixedVisibilityModal } from './src/lib/createMixedVisibilityModal';
 import { createPollMessage } from './src/lib/createPollMessage';
 import { createPollModal } from './src/lib/createPollModal';
 import { finishPollMessage } from './src/lib/finishPollMessage';
 import { nextPollMessage } from './src/lib/nextPollMessage';
 import { votePoll } from './src/lib/votePoll';
 import { PollCommand } from './src/PollCommand';
-
 export class PollApp extends App implements IUIKitInteractionHandler {
 
     constructor(info: IAppInfo, logger: ILogger) {
@@ -47,7 +48,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         mode?: string,
                         visibility?: string,
                     },
-                },    
+                },
             } = data.view as any;
 
             if (!state) {
@@ -59,13 +60,31 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 });
             }
 
-            try {
-                await createPollMessage(data, read, modify, persistence, data.user.id);
-            } catch (err) {
-                return context.getInteractionResponder().viewErrorResponse({
-                    viewId: data.view.id,
-                    errors: err,
-                });
+            if (state.config && state.config.visibility !== pollVisibility.mixed) {
+                try {
+                    await createPollMessage(data, read, modify, persistence, data.user.id);
+                } catch (err) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: err,
+                    });
+                }
+            } else {
+                // Open mixed visibility modal
+                try {
+                    const modal = await createMixedVisibilityModal({ question: state.poll.question, persistence, modify, data });
+                    await modify.getUiController().openModalView(modal, context.getInteractionData(), data.user);
+
+                    return {
+                        success: true,
+                    };
+
+                } catch (err) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: err,
+                    });
+                }
             }
 
             return {
@@ -137,16 +156,44 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         errors: err,
                     });
                 }   
-            } else {
+        } else {
 
-            const modal = await createLivePollModal({id: data.view.id, question: "", persistence, modify, data, pollIndex, totalPolls});
-            return context.getInteractionResponder().updateModalViewResponse(modal);
-            }
+        const modal = await createLivePollModal({id: data.view.id, question: "", persistence, modify, data, pollIndex, totalPolls});
+        return context.getInteractionResponder().updateModalViewResponse(modal);
         }
+            } else if (/create-mixed-visibility-modal/.test(id)) {
 
-    return {
-        success: true,
-    };
+                const { state }: {
+                    state: {
+                        mixedVisibility: {
+                        anonymousOptions: any,
+                        },
+                    },
+                } = data.view as any;
+
+                if (!state) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: {
+                            question: 'Error building mixed visibility modal',
+                        },
+                    });
+                }
+
+                try {
+                    await createPollMessage(data, read, modify, persistence, data.user.id);
+                } catch (err) {
+                    return context.getInteractionResponder().viewErrorResponse({
+                        viewId: data.view.id,
+                        errors: err,
+                    });
+        }
+                }
+
+                return {
+                    success: true,
+                };
+            
 }
 
 
