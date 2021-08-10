@@ -94,8 +94,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             }
             const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, data.view.id);
             const readData = await read.getPersistenceReader().readByAssociation(association);
-            console.log("Read Data = ", readData)
-            console.log("Read Data Polls = ", readData[0]["polls"])
             const polls = readData[0]["polls"] || [];
             const pollIndex = +readData[0]["pollIndex"] + 1
             const totalPolls = +readData[0]["totalPolls"]
@@ -104,6 +102,9 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
                 if (!state.poll || !state.poll.question || state.poll.question.trim() === '') {
                     throw { question: 'Please type your question here' };
+                }
+                if(!state.poll || !state.poll.ttv || isNaN(+state.poll.ttv)) {
+                    throw { ttv: 'Please enter a valid time for the poll to end' };
                 }
                 if (!state.poll['option-0'] || state.poll['option-0'] === '') {
                     throw {
@@ -130,7 +131,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 try {
                     await createLivePollMessage(data, read, modify, persistence, data.user.id, 0);
                 } catch (err) {
-                    console.log("Error =", err);
                     this.getLogger().log(err);
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
@@ -139,8 +139,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 }   
             } else {
 
-            console.log("Reached within new modal creation block");
-            // TODO: Make fields blank for next poll
             const modal = await createLivePollModal({id: data.view.id, question: "", persistence, modify, data, pollIndex, totalPolls});
             return context.getInteractionResponder().updateModalViewResponse(modal);
             }
@@ -156,8 +154,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         const data = context.getInteractionData();
 
         const { actionId } = data;
-
-        console.log("Data = ", data);
 
         switch (actionId) {
             case 'vote': {
@@ -175,8 +171,13 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             }
 
             case 'addChoice': {
-                const modal = await createPollModal({ id: data.container.id, data, persistence, modify, options: parseInt(String(data.value), 10) });
-
+                let modal;
+                if(data.value && data.value.includes('live-')) {
+                    modal = await createLivePollModal({id: data.container.id, data, persistence, modify, options: parseInt(data.value.split('-')[1], 10), pollIndex: parseInt(data.value.split('-')[2], 10), totalPolls: parseInt(data.value.split('-')[3], 10)});
+                }
+                else {
+                 modal = await createPollModal({ id: data.container.id, data, persistence, modify, options: parseInt(String(data.value), 10) });
+                }
                 return context.getInteractionResponder().updateModalViewResponse(modal);
             }
 
@@ -239,6 +240,35 @@ export class PollApp extends App implements IUIKitInteractionHandler {
     }
 
     public async initialize(configuration: IConfigurationExtend): Promise<void> {
+        configuration.scheduler.registerProcessors([
+            {
+                id: 'nextPoll',
+                processor: async (jobContext, read, modify, http, persis) => {
+                    try {
+                        await nextPollMessage({ data:jobContext, read, persistence:persis, modify })
+
+                    } catch (e) {
+                        const { room } = jobContext.room;
+                        const errorMessage = modify
+                             .getCreator()
+                             .startMessage()
+                             .setSender(jobContext.user)
+                             .setText(e.message)
+                             .setUsernameAlias('Poll');
+    
+                        if (room) {
+                                errorMessage.setRoom(room);
+                        }
+                        modify
+                             .getNotifier()
+                             .notifyUser(
+                                 jobContext.user,
+                                 errorMessage.getMessage(),
+                             );
+                    }
+                }
+            },
+        ]);
         await configuration.slashCommands.provideSlashCommand(new PollCommand());
         await configuration.settings.provideSetting({
             id : 'use-user-name',

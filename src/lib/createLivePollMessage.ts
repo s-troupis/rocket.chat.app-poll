@@ -20,7 +20,7 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
     const state = record["polls"][pollIndex];
 
     const options = Object.entries<any>(state.poll || {})
-        .filter(([key]) => key !== 'question')
+        .filter(([key]) => key !== 'question' && key !== 'ttv')
         .map(([, option]) => option)
         .filter((option) => option.trim() !== '');
 
@@ -52,12 +52,15 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
             liveId: id,
             pollIndex: pollIndex,
             totalLivePolls: record["totalPolls"],
-            activeLivePoll: true
+            activeLivePoll: true,
         };
 
+        let livePollEndTime = new Date();
+        // Convert state.ttv to integer and add it to livePollEndTime
+        livePollEndTime.setSeconds(livePollEndTime.getSeconds() + (+state.poll.ttv));
+        poll.livePollEndTime = livePollEndTime.toUTCString();
+
         const block = modify.getCreator().getBlockBuilder();
-        console.log("LivePollMessage PollIndex = ", pollIndex)
-        console.log("LivePollMessage totalPolls = ", record["totalPolls"])
         createPollBlocks(block, poll.question, options, poll, showNames.value);
 
         builder.setBlocks(block);
@@ -65,6 +68,18 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
         const messageId = await modify.getCreator().finish(builder);
         poll.msgId = messageId;
 
+        // Attaching message id to data
+        data["message"] = {id: messageId};
+
+        // Enforcing time limit on the poll
+        const task = {
+            id: 'nextPoll',
+            when: `${record["polls"][pollIndex]["poll"]["ttv"]} seconds`,
+            data: data
+          };
+
+        await modify.getScheduler().scheduleOnce(task);
+        
         const pollAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, messageId);
 
         await persistence.createWithAssociation(poll, pollAssociation);

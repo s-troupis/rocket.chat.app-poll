@@ -24,16 +24,10 @@ export async function nextPollMessage({ data, read, persistence, modify }: {
         };
     }
 
-    console.log("Within nextPoll Message");
-
     const poll = await getPoll(String(data.message.id), read);
 
     if (!poll) {
         throw new Error('no such poll');
-    }
-
-    if (poll.finished) {
-        throw new Error('this poll is already finished');
     }
 
     if (poll.uid !== data.user.id) {
@@ -41,38 +35,41 @@ export async function nextPollMessage({ data, read, persistence, modify }: {
     }
 
     try {
+        //Check if poll already marked inactive
+        if(poll.activeLivePoll) {
 
-        // Mark poll as inactive
-        poll.activeLivePoll = false
-        // Finish poll if not finished
-        if(!poll.finished)
-        {
-            await finishPoll(poll, { persis: persistence });
-        }
+            // Mark poll as inactive
+            poll.activeLivePoll = false
+            // Finish poll if not finished
+            if(!poll.finished)
+            {
+                await finishPoll(poll, { persis: persistence });
+            }
 
-        const message = await modify.getUpdater().message(data.message.id as string, data.user);
-        message.setEditor(message.getSender());
+            const message = await modify.getUpdater().message(data.message.id as string, data.user);
+            message.setEditor(message.getSender());
 
-        const block = modify.getCreator().getBlockBuilder();
+            const block = modify.getCreator().getBlockBuilder();
 
-        const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
+            const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
 
-        createPollBlocks(block, poll.question, poll.options, poll, showNames.value);
+            createPollBlocks(block, poll.question, poll.options, poll, showNames.value);
 
-        message.setBlocks(block);
+            message.setBlocks(block);
 
-        // End poll and send next poll
-        if(poll.pollIndex!=undefined && poll.totalLivePolls && poll.pollIndex < poll.totalLivePolls) {
-            // Send updated message
-            modify.getUpdater().finish(message);
-            // Create next poll
-            data.view = {id: poll.liveId}
-            await createLivePollMessage(data, read, modify, persistence, data.user.id, poll.pollIndex + 1);
-        } else {
+            // End poll and send next poll
+            if(poll.pollIndex!=undefined && poll.totalLivePolls && poll.pollIndex < poll.totalLivePolls - 1) {
+                // Send updated message
+                modify.getUpdater().finish(message);
+                // Create next poll
+                data.view = {id: poll.liveId}
+                await createLivePollMessage(data, read, modify, persistence, data.user.id, poll.pollIndex + 1);
+            } else {
 
-        // Finish current poll
-        return modify.getUpdater().finish(message);
-        }        
+            // Finish current poll
+            return modify.getUpdater().finish(message);
+            }  
+        }      
     } catch (e) {
         console.error('Error', e);
     }
