@@ -21,6 +21,14 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
         },
     });
 
+    if(poll.activeLivePoll) {
+        block.addContextBlock({
+            elements: [
+                block.newMarkdownTextObject(`The poll will finish at ${poll.livePollEndTime}`),
+            ],
+        });
+    }
+
     if (poll.finished) {
         block.addContextBlock({
             elements: [
