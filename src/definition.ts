@@ -22,6 +22,7 @@ export interface IPoll {
     pollIndex?: number;
     totalLivePolls?: number;
     activeLivePoll?: boolean;
+    livePollEndTime?: string
 }
 
 export interface IModalContext extends Partial<IUIKitBlockIncomingInteraction> {
