@@ -17,12 +17,9 @@ export async function createLivePollModal({ id = '', question, persistence, data
 }): Promise<IUIKitModalViewParam> {
     const viewId = id || `create-live-poll-modal-${uuid()}`;
 
-    console.log("View id = ", viewId);
-    console.log("Poll Index = ", pollIndex)
-
     if(pollIndex === 0) {
         const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
-        await persistence.createWithAssociation(data, association);
+        await persistence.updateByAssociation(association, data, true);
     }
 
     const block = modify.getCreator().getBlockBuilder();
@@ -30,6 +27,12 @@ export async function createLivePollModal({ id = '', question, persistence, data
         blockId: 'poll',
         element: block.newPlainTextInputElement({ initialValue: question, actionId: 'question' }),
         label: block.newPlainTextObject('Insert your question'),
+    })
+    
+    block.addInputBlock({
+        blockId: 'poll',
+        element: block.newPlainTextInputElement({ actionId: 'ttv', placeholder: block.newPlainTextObject('Number of seconds'),}),
+        label: block.newPlainTextObject('Time limit to vote'),
     })
     .addDividerBlock();
 
@@ -67,7 +70,7 @@ export async function createLivePollModal({ id = '', question, persistence, data
                 block.newButtonElement({
                     actionId: 'addChoice',
                     text: block.newPlainTextObject('Add a choice'),
-                    value: String(options + 1),
+                    value: `live-${String(options + 1)}-${pollIndex}-${totalPolls}`,
                 }),
                 block.newStaticSelectElement({
                     placeholder: block.newPlainTextObject('Open vote'),
