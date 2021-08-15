@@ -119,10 +119,10 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 });
             }
             const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, data.view.id);
-            const readData = await read.getPersistenceReader().readByAssociation(association);
-            const polls = readData[0]["polls"] || [];
-            const pollIndex = +readData[0]["pollIndex"] + 1
-            const totalPolls = +readData[0]["totalPolls"]
+            const [readData] = await read.getPersistenceReader().readByAssociation(association);
+            const polls = readData["polls"] || [];
+            const pollIndex = +readData["pollIndex"] + 1
+            const totalPolls = +readData["totalPolls"]
             // Prompt user to enter values for poll if left blank
             try {
 
@@ -150,12 +150,39 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 });
             }   
             polls.push(state);
-            readData[0]["polls"] = polls;
-            readData[0]["pollIndex"] = pollIndex;
-            await persistence.updateByAssociation(association, readData[0], true);
+            readData["polls"] = polls;
+            readData["pollIndex"] = pollIndex;
+            readData["user"] = data.user;
+            readData["appId"] = data.appId;
+            readData["view"] = data.view;
+            readData["triggerId"] = data.triggerId;
+            await persistence.updateByAssociation(association, readData, true);
             if(pollIndex === totalPolls){
+                const pollId = `live-${Math.random().toString(36).slice(7)}`
+                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, pollId);
+                await persistence.createWithAssociation(readData, association);
                 try {
-                    await createLivePollMessage(data, read, modify, persistence, data.user.id, 0);
+                    if(readData["save"]){
+                        const message = modify
+                             .getCreator()
+                             .startMessage()
+                             .setSender(data.user)
+                             .setText(`Live Poll has been saved with id ${pollId}. Use \`/poll live load ${pollId}\` to start.`)
+                             .setUsernameAlias('Poll');
+    
+                        if (readData["room"]) {
+                                message.setRoom(readData["room"]);
+                        }
+                        modify
+                             .getNotifier()
+                             .notifyUser(
+                                 data.user,
+                                 message.getMessage(),
+                             );
+                        
+                    } else {
+                        await createLivePollMessage(data, read, modify, persistence, data.user.id, 0);
+                    }
                 } catch (err) {
                     this.getLogger().log(err);
                     return context.getInteractionResponder().viewErrorResponse({
@@ -347,7 +374,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         if (room) {
                                 errorMessage.setRoom(room);
                         }
-                        modify
+                        await modify
                              .getNotifier()
                              .notifyUser(
                                  jobContext.user,
