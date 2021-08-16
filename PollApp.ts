@@ -130,8 +130,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         await configuration.slashCommands.provideSlashCommand(new PollCommand());
         await configuration.settings.provideSetting({
             id : 'use-user-name',
-            i18nLabel: 'Use name attribute to display voters, instead of username',
-            i18nDescription: 'When checked, display voters as full user names instead of username',
+            i18nLabel: 'use_user_name_label',
+            i18nDescription: 'use_user_name_description',
             required: false,
             type: SettingType.BOOLEAN,
             public: true,
@@ -139,12 +139,12 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         });
         await configuration.settings.provideSetting({
             id : 'wordcloud-api',
-            i18nLabel: 'Wordcloud API endpoint to fetch wordclouds from',
-            i18nDescription: "When left blank, poll summary will be displayed on enabling wordcloud. See github.com/RonLek/wordcloud-api",
+            i18nLabel: 'word_cloud_api_label',
+            i18nDescription: "word_cloud_api_description",
             required: false,
             type: SettingType.STRING,
             public: true,
-            packageValue: "",
+            packageValue: "https://quickchart.io/wordcloud",
         });
     }
 }
