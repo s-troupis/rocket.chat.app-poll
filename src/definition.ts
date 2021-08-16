@@ -18,7 +18,7 @@ export interface IPoll {
     finished?: boolean;
     confidential?: boolean;
     singleChoice?: boolean;
-    wordcloud?: boolean;
+    wordCloud?: boolean;
 }
 
 export interface IModalContext extends Partial<IUIKitBlockIncomingInteraction> {

@@ -39,7 +39,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 config?: {
                     mode?: string,
                     visibility?: string,
-                    wordcloud?:string
+                    wordCloud?:string
                 },
             },
         } = data.view as any;
@@ -95,7 +95,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
             case 'finish': {
                 try {
-                    await finishPollMessage({ data, read, persistence, modify });
+                    const logger = this.getLogger();
+                    await finishPollMessage({ data, read, persistence, modify, http, logger });
                 } catch (e) {
 
                     const { room } = context.getInteractionData();

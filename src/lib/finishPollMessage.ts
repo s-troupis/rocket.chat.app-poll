@@ -1,4 +1,6 @@
 import {
+    IHttp,
+    ILogger,
     IModify,
     IPersistence,
     IRead,
@@ -13,6 +15,7 @@ import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { IPoll } from "../definition";
 import { createPollBlocks } from "./createPollBlocks";
 import { getPoll } from "./getPoll";
+const fs = require("fs");
 
 async function finishPoll(poll: IPoll, { persis }: { persis: IPersistence }) {
     const association = new RocketChatAssociationRecord(
@@ -28,11 +31,15 @@ export async function finishPollMessage({
     read,
     persistence,
     modify,
+    http,
+    logger
 }: {
     data;
     read: IRead;
     persistence: IPersistence;
     modify: IModify;
+    http: IHttp;
+    logger: ILogger;
 }) {
     if (!data.message) {
         return {
@@ -68,24 +75,12 @@ export async function finishPollMessage({
             .getEnvironmentReader()
             .getSettings()
             .getById("use-user-name");
-        const wordcloudAPI = await read
+        const wordCloudAPI = await read
             .getEnvironmentReader()
             .getSettings()
             .getById("wordcloud-api");
-        createPollBlocks(
-            block,
-            poll.question,
-            poll.options,
-            poll,
-            showNames.value,
-            wordcloudAPI.value
-        );
 
-        message.setBlocks(block);
-
-        modify.getUpdater().finish(message);
-
-        if (poll.wordcloud && wordcloudAPI.value) {
+        if (poll.wordCloud && wordCloudAPI.value) {
             let wordList = [] as string[];
             poll.options.map((option, index) => {
                 wordList = wordList.concat(
@@ -93,20 +88,49 @@ export async function finishPollMessage({
                 );
             });
             const attachment = <IMessageAttachment>{
-                imageUrl: `${wordcloudAPI.value}?text=${wordList.join(" ")}`,
+                imageUrl: `${wordCloudAPI.value}?text=${wordList.join(" ")}`,
             };
-            const wordCloudBuilder = modify
+            const response = await http.get(`${wordCloudAPI.value}?text=${wordList.join(" ")}`)
+            if(response) {
+                const wordCloudBuilder = modify
                 .getCreator()
                 .startMessage()
                 .setUsernameAlias(data.user.username)
                 .setRoom(<IRoom>{ ...data.room })
                 .addAttachment(attachment);
 
-            return modify.getCreator().finish(wordCloudBuilder);
+            return modify.getCreator().finish(wordCloudBuilder);                
+            } else {
+                createPollBlocks(
+                    block,
+                    poll.question,
+                    poll.options,
+                    poll,
+                    showNames.value,
+                    false
+                );
+        
+                message.setBlocks(block);
+        
+                modify.getUpdater().finish(message);
+            }
+        } else {
+            createPollBlocks(
+                block,
+                poll.question,
+                poll.options,
+                poll,
+                showNames.value,
+                false
+            );
+    
+            message.setBlocks(block);
+    
+            modify.getUpdater().finish(message);
         }
         return;
     } catch (e) {
-        console.error("Error", e);
+        logger.error("Error", e);
     }
     return;
 }

@@ -49,11 +49,11 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     }
 
     try {
-        const { config = { mode: 'multiple', visibility: 'open', wordcloud: 'disabled' } } = state;
-        const { mode = 'multiple', visibility = 'open', wordcloud = 'disabled' } = config;
+        const { config = { mode: 'multiple', visibility: 'open', wordCloud: 'disabled' } } = state;
+        const { mode = 'multiple', visibility = 'open', wordCloud = 'disabled' } = config;
 
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
-        const wordcloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
+        const wordCloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
 
         const builder = modify.getCreator().startMessage()
             .setUsernameAlias((showNames.value && data.user.name) || data.user.username)
@@ -74,11 +74,11 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             votes: options.map(() => ({ quantity: 0, voters: [] })),
             confidential: visibility === 'confidential',
             singleChoice: mode === 'single',
-            wordcloud: wordcloud === 'enabled'
+            wordCloud: wordCloud === 'enabled'
         };
 
         const block = modify.getCreator().getBlockBuilder();
-        createPollBlocks(block, poll.question, options, poll, showNames.value, wordcloudAPI.value);
+        createPollBlocks(block, poll.question, options, poll, showNames.value, wordCloudAPI.value);
 
         builder.setBlocks(block);
 

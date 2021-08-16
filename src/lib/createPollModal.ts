@@ -79,7 +79,7 @@ export async function createPollModal({ id = '', question, persistence, data, mo
                 }),
                 block.newStaticSelectElement({
                     placeholder: block.newPlainTextObject('Wordcloud disabled'),
-                    actionId: 'wordcloud',
+                    actionId: 'wordCloud',
                     initialValue: 'disabled',
                     options: [
                         {

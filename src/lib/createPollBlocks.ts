@@ -84,7 +84,7 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
     block.addDividerBlock()
 
     // Word cloud when Internet access disabled
-    if(poll.finished && poll.wordcloud && !wordCloud) {
+    if(poll.finished && poll.wordCloud && !wordCloud) {
         const responseSummary = poll.votes.map((vote, index) => {
             return `${poll.options[index]}(${vote.quantity})`
         }).join(' ')

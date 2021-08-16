@@ -34,9 +34,9 @@ export async function votePoll({ data, read, persistence, modify }: {
     const block = modify.getCreator().getBlockBuilder();
 
     const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
-    const wordcloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
+    const wordCloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
 
-    createPollBlocks(block, poll.question, poll.options, poll, showNames.value, wordcloudAPI.value);
+    createPollBlocks(block, poll.question, poll.options, poll, showNames.value, wordCloudAPI.value);
 
     message.setBlocks(block);
 
