@@ -107,6 +107,7 @@ export async function finishPollMessage({
                     poll.options,
                     poll,
                     showNames.value,
+                    poll.anonymousOptions,
                     false
                 );
         
@@ -121,6 +122,7 @@ export async function finishPollMessage({
                 poll.options,
                 poll,
                 showNames.value,
+                poll.anonymousOptions,
                 false
             );
     

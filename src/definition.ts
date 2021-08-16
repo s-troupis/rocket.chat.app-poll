@@ -1,6 +1,12 @@
 import { IUIKitBlockIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
+export enum pollVisibility {
+    open = 'open',
+    confidential = 'confidential',
+    mixed = 'mixed',
+}
+
 export type IVoterPerson = Pick<IUser, 'id' | 'username' | 'name'>;
 
 export interface IVoter {
@@ -16,9 +22,11 @@ export interface IPoll {
     totalVotes: number;
     votes: Array<IVoter>;
     finished?: boolean;
-    confidential?: boolean;
+    visibility?: pollVisibility;
     singleChoice?: boolean;
     wordCloud?: boolean;
+    anonymousOptions: Array<string>;
+    allowAddingOptions?: boolean;
 }
 
 export interface IModalContext extends Partial<IUIKitBlockIncomingInteraction> {

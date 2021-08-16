@@ -2,7 +2,7 @@ import { IModify, IPersistence } from '@rocket.chat/apps-engine/definition/acces
 import { RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { IUIKitModalViewParam } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
 
-import { IModalContext } from '../definition';
+import { IModalContext, pollVisibility } from '../definition';
 import { uuid } from './uuid';
 
 export async function createPollModal({ id = '', question, persistence, data, modify, options = 2 }: {
@@ -13,7 +13,7 @@ export async function createPollModal({ id = '', question, persistence, data, mo
     modify: IModify,
     options?: number,
 }): Promise<IUIKitModalViewParam> {
-    const viewId = id || uuid();
+    const viewId = id || `create-poll-modal-${uuid()}`;
 
     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
     await persistence.createWithAssociation(data, association);
@@ -65,15 +65,34 @@ export async function createPollModal({ id = '', question, persistence, data, mo
                 block.newStaticSelectElement({
                     placeholder: block.newPlainTextObject('Open vote'),
                     actionId: 'visibility',
-                    initialValue: 'open',
+                    initialValue: pollVisibility.open,
                     options: [
                         {
                             text: block.newPlainTextObject('Open vote'),
-                            value: 'open',
+                            value: pollVisibility.open,
                         },
                         {
                             text: block.newPlainTextObject('Confidential vote'),
-                            value: 'confidential',
+                            value: pollVisibility.confidential,
+                        },
+                        {
+                            text: block.newPlainTextObject('Mixed Visibility vote'),
+                            value: pollVisibility.mixed,
+                        },
+                    ],
+                }),
+                block.newStaticSelectElement({
+                    placeholder: block.newPlainTextObject('Disallow Adding Choices'),
+                    actionId: 'additionalChoices',
+                    initialValue: 'disallowAddingChoices',
+                    options: [
+                        {
+                            text: block.newPlainTextObject('Allow Adding Choices'),
+                            value: 'allowAddingChoices',
+                        },
+                        {
+                            text: block.newPlainTextObject('Disallow Adding Choices'),
+                            value: 'disallowAddingChoices',
                         },
                     ],
                 }),
