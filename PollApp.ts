@@ -47,7 +47,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                             mode?: string,
                             visibility?: string,
                             additionalChoices?: string,
-                            wordCloud?:string;
+                            wordCloud?: string;
                         },
                     },
                 } = data.view as any;
@@ -239,11 +239,12 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         await configuration.settings.provideSetting({
             id : 'wordcloud-api',
             i18nLabel: 'word_cloud_api_label',
-            i18nDescription: "word_cloud_api_description",
+            i18nDescription: 'word_cloud_api_description',
             required: false,
             type: SettingType.STRING,
             public: true,
-            packageValue: "https://quickchart.io/wordcloud",
+            packageValue: 'https://quickchart.io/wordcloud',
+            value: 'https://quickchart.io/wordcloud',
         });
     }
 }

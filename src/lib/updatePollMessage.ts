@@ -62,7 +62,6 @@ export async function updatePollMessage({
             .getSettings()
             .getById('use-user-name');
         const wordCloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
-        
 
         createPollBlocks(
             block,
@@ -71,7 +70,7 @@ export async function updatePollMessage({
             poll,
             showNames.value,
             poll.anonymousOptions,
-            wordCloudAPI.value
+            wordCloudAPI.value,
         );
 
         message.setBlocks(block);

@@ -4,23 +4,22 @@ import {
     IModify,
     IPersistence,
     IRead,
-} from "@rocket.chat/apps-engine/definition/accessors";
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import {
     RocketChatAssociationModel,
     RocketChatAssociationRecord,
-} from "@rocket.chat/apps-engine/definition/metadata";
-import { IMessageAttachment } from "@rocket.chat/apps-engine/definition/messages";
-import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
+} from '@rocket.chat/apps-engine/definition/metadata';
+import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { IPoll } from "../definition";
-import { createPollBlocks } from "./createPollBlocks";
-import { getPoll } from "./getPoll";
-const fs = require("fs");
+import { IPoll } from '../definition';
+import { createPollBlocks } from './createPollBlocks';
+import { getPoll } from './getPoll';
 
 async function finishPoll(poll: IPoll, { persis }: { persis: IPersistence }) {
     const association = new RocketChatAssociationRecord(
         RocketChatAssociationModel.MISC,
-        poll.msgId
+        poll.msgId,
     );
     poll.finished = true;
     return persis.updateByAssociation(association, poll);
@@ -32,7 +31,7 @@ export async function finishPollMessage({
     persistence,
     modify,
     http,
-    logger
+    logger,
 }: {
     data;
     read: IRead;
@@ -50,15 +49,15 @@ export async function finishPollMessage({
     const poll = await getPoll(String(data.message.id), read);
 
     if (!poll) {
-        throw new Error("no such poll");
+        throw new Error('no such poll');
     }
 
     if (poll.finished) {
-        throw new Error("this poll is already finished");
+        throw new Error('this poll is already finished');
     }
 
     if (poll.uid !== data.user.id) {
-        throw new Error("You are not allowed to finish the poll"); // send an ephemeral message
+        throw new Error('You are not allowed to finish the poll'); // send an ephemeral message
     }
 
     try {
@@ -74,32 +73,46 @@ export async function finishPollMessage({
         const showNames = await read
             .getEnvironmentReader()
             .getSettings()
-            .getById("use-user-name");
+            .getById('use-user-name');
         const wordCloudAPI = await read
             .getEnvironmentReader()
             .getSettings()
-            .getById("wordcloud-api");
+            .getById('wordcloud-api');
 
         if (poll.wordCloud && wordCloudAPI.value) {
-            let wordList = [] as string[];
+            let wordList = [] as Array<string>;
             poll.options.map((option, index) => {
                 wordList = wordList.concat(
-                    Array(poll.votes[index].quantity).fill(option)
+                    Array(poll.votes[index].quantity).fill(option),
                 );
             });
-            const attachment = <IMessageAttachment>{
-                imageUrl: `${wordCloudAPI.value}?text=${wordList.join(" ")}`,
-            };
-            const response = await http.get(`${wordCloudAPI.value}?text=${wordList.join(" ")}`)
-            if(response) {
+            const attachment = {
+                imageUrl: `${wordCloudAPI.value}?text=${wordList.join(' ')}`,
+            } as IMessageAttachment;
+            const response = await http.get(`${wordCloudAPI.value}?text=${wordList.join(' ')}`);
+            if (response) {
+                createPollBlocks(
+                    block,
+                    poll.question,
+                    poll.options,
+                    poll,
+                    showNames.value,
+                    poll.anonymousOptions,
+                    wordCloudAPI.value,
+                );
+
+                message.setBlocks(block);
+
+                modify.getUpdater().finish(message);
+
                 const wordCloudBuilder = modify
                 .getCreator()
                 .startMessage()
                 .setUsernameAlias(data.user.username)
-                .setRoom(<IRoom>{ ...data.room })
+                .setRoom({ ...data.room } as IRoom)
                 .addAttachment(attachment);
 
-            return modify.getCreator().finish(wordCloudBuilder);                
+                return modify.getCreator().finish(wordCloudBuilder);
             } else {
                 createPollBlocks(
                     block,
@@ -108,11 +121,11 @@ export async function finishPollMessage({
                     poll,
                     showNames.value,
                     poll.anonymousOptions,
-                    false
+                    false,
                 );
-        
+
                 message.setBlocks(block);
-        
+
                 modify.getUpdater().finish(message);
             }
         } else {
@@ -123,16 +136,16 @@ export async function finishPollMessage({
                 poll,
                 showNames.value,
                 poll.anonymousOptions,
-                false
+                wordCloudAPI.value,
             );
-    
+
             message.setBlocks(block);
-    
+
             modify.getUpdater().finish(message);
         }
         return;
     } catch (e) {
-        logger.error("Error", e);
+        logger.error('Error', e);
     }
     return;
 }

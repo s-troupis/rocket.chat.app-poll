@@ -15,7 +15,7 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
                     {
                         text: block.newPlainTextObject('Finish poll'),
                         value: 'finish',
-                    }
+                    },
                 ],
             },
         },
@@ -94,13 +94,13 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
     }
 
     // Add text block for total votes
-    block.addDividerBlock()
+    block.addDividerBlock();
 
     // Word cloud when Internet access disabled
-    if(poll.finished && poll.wordCloud && !wordCloud) {
+    if (poll.finished && poll.wordCloud && !wordCloud) {
         const responseSummary = poll.votes.map((vote, index) => {
-            return `${poll.options[index]}(${vote.quantity})`
-        }).join(' ')
+            return `${poll.options[index]}(${vote.quantity})`;
+        }).join(' ');
         block.addContextBlock({
             elements: [
                 block.newMarkdownTextObject(`Poll summary: ${responseSummary}`),
