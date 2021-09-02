@@ -1,4 +1,6 @@
 {
-    "cmd_description": "Create a simple poll",
-    "params_example": "Type your question or fill it up on the form."
+    "cmd_description": "Create a simple poll or a Live Poll",
+    "params_example": "Type your question or fill it up on the form. Optionally follow with live <number> or live save <number> or live load <id>.",
+    "timezone_label": "TimeZone",
+    "timezone_description": "Timezone to display Poll finish time in"
 }
