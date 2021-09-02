@@ -30,6 +30,7 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
         const { mode = 'multiple', visibility = 'open' } = config;
 
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
+        const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
 
         const builder = modify.getCreator().startMessage()
             .setUsernameAlias((showNames.value && data.user.name) || data.user.username)
@@ -60,10 +61,10 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
         let livePollEndTime = new Date();
         // Convert state.ttv to integer and add it to livePollEndTime
         livePollEndTime.setSeconds(livePollEndTime.getSeconds() + (+state.poll.ttv));
-        poll.livePollEndTime = livePollEndTime.toUTCString();
+        poll.livePollEndTime = new Intl.DateTimeFormat('en-GB', { timeZone:timeZone.value, weekday: "long", month: "long", year: "numeric", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", timeZoneName: "long" }).format(livePollEndTime);
 
         const block = modify.getCreator().getBlockBuilder();
-        createPollBlocks(block, poll.question, options, poll, showNames.value, poll.anonymousOptions);
+        createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions);
 
         builder.setBlocks(block);
 

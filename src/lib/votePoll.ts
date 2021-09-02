@@ -36,8 +36,9 @@ export async function votePoll({ data, read, persistence, modify, pollIndex, tot
     const block = modify.getCreator().getBlockBuilder();
 
     const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
+    const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
 
-    createPollBlocks(block, poll.question, poll.options, poll, showNames.value, poll.anonymousOptions);
+    createPollBlocks(block, poll.question, poll.options, poll, showNames.value, timeZone.value, poll.anonymousOptions);
 
     message.setBlocks(block);
 

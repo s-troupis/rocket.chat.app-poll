@@ -27,6 +27,7 @@ import { nextPollMessage } from './src/lib/nextPollMessage';
 import { updatePollMessage } from './src/lib/updatePollMessage';
 import { votePoll } from './src/lib/votePoll';
 import { PollCommand } from './src/PollCommand';
+import timeZones from './src/assets/timezones';
 export class PollApp extends App implements IUIKitInteractionHandler {
 
     constructor(info: IAppInfo, logger: ILogger) {
@@ -293,7 +294,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
             case 'nextPoll': {
                 try {
-                    await nextPollMessage({ data, read, persistence, modify });
+                    const logger = this.getLogger();
+                    await nextPollMessage({ data, read, persistence, modify, logger });
                 } catch (e) {
 
                     const { room } = context.getInteractionData();
@@ -360,7 +362,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 id: 'nextPoll',
                 processor: async (jobContext, read, modify, http, persis) => {
                     try {
-                        await nextPollMessage({ data:jobContext, read, persistence:persis, modify })
+                        const logger = this.getLogger();
+                        await nextPollMessage({ data:jobContext, read, persistence:persis, modify, logger })
 
                     } catch (e) {
                         const { room } = jobContext.room;
@@ -384,7 +387,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 }
             },
         ]);
-        await configuration.slashCommands.provideSlashCommand(new PollCommand());
+        await configuration.slashCommands.provideSlashCommand(new PollCommand(this));
         await configuration.settings.provideSetting({
             id : 'use-user-name',
             i18nLabel: 'Use name attribute to display voters, instead of username',
@@ -393,6 +396,20 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             type: SettingType.BOOLEAN,
             public: true,
             packageValue: false,
+        });
+        await configuration.settings.provideSetting({
+            id : 'timezone',
+            i18nLabel: 'timezone_label',
+            i18nDescription: 'timezone_description',
+            required: true,
+            type: SettingType.SELECT,
+            public: true,
+            packageValue: "America/Danmarkshavn",
+            value: "America/Danmarkshavn",
+            values: timeZones.timeZones.map(tz => ({
+                i18nLabel: `${tz.value} (UTC ${tz.offset >= 0? "+ " + tz.offset : "- " + Math.abs(tz.offset)} )`,
+                key: tz.utc[0],
+            })),
         });
     }
 }

@@ -1,4 +1,4 @@
-import { IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { ILogger, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import { RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { IPoll } from '../definition';
@@ -12,11 +12,12 @@ async function finishPoll(poll: IPoll, { persis }: { persis: IPersistence }) {
     return persis.updateByAssociation(association, poll);
 }
 
-export async function nextPollMessage({ data, read, persistence, modify }: {
+export async function nextPollMessage({ data, read, persistence, modify, logger }: {
     data,
     read: IRead,
     persistence: IPersistence,
     modify: IModify,
+    logger: ILogger,
 }) {
     if (!data.message) {
         return {
@@ -52,8 +53,9 @@ export async function nextPollMessage({ data, read, persistence, modify }: {
             const block = modify.getCreator().getBlockBuilder();
 
             const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
+            const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
 
-            createPollBlocks(block, poll.question, poll.options, poll, showNames.value, poll.anonymousOptions);
+            createPollBlocks(block, poll.question, poll.options, poll, showNames.value, timeZone.value, poll.anonymousOptions);
 
             message.setBlocks(block);
 
@@ -71,6 +73,6 @@ export async function nextPollMessage({ data, read, persistence, modify }: {
             }  
         }      
     } catch (e) {
-        console.error('Error', e);
+        logger.error('Error', e);
     }
 }

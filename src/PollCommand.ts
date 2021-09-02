@@ -1,6 +1,7 @@
 import { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import { RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { ISlashCommand, SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import { PollApp } from '../PollApp';
 import { createLivePollMessage } from './lib/createLivePollMessage';
 import { createLivePollModal } from './lib/createLivePollModal';
 import { createPollModal } from './lib/createPollModal';
@@ -10,6 +11,8 @@ export class PollCommand implements ISlashCommand {
     public i18nParamsExample = 'params_example';
     public i18nDescription = 'cmd_description';
     public providesPreview = false;
+
+    constructor(private readonly app: PollApp) { }
 
     public async executor(context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void> {
         const triggerId = context.getTriggerId();
@@ -50,7 +53,7 @@ export class PollCommand implements ISlashCommand {
                         throw new Error(`Unable to load poll with id ${pollId}. Error ${e}`);
                     }
                 } else {
-                    console.log("Please enter a valid poll id");
+                    this.app.getLogger().log("Please enter a valid poll id");
                 }
                     return;
             } else {
@@ -70,7 +73,21 @@ export class PollCommand implements ISlashCommand {
                 await modify.getUiController().openModalView(modal, {triggerId}, context.getSender());
             }
             else {
-                console.log("Please enter a valid number of polls after the live subcommand");
+                const messageStructure = await modify.getCreator().startMessage();
+                const sender = context.getSender(); // the user calling the slashcommand
+                const room = context.getRoom(); // the current room
+
+                messageStructure
+                .setSender(sender)
+                .setRoom(room)
+                .setText("Please enter the number of live polls to create. Example usage: \`/poll live 2\` or \`/poll live save 2\`");
+
+                await modify
+                    .getNotifier()
+                    .notifyUser(
+                        sender,
+                        messageStructure.getMessage(),
+                    );
             }
         } else {
 
