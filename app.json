@@ -18,6 +18,27 @@
     "permissions": [
         {
             "name": "scheduler"
+        },
+        {
+            "name": "user.read"
+        },
+        {
+            "name": "server-setting.read"
+        },
+        {
+            "name": "room.read"
+        },
+        {
+            "name": "message.read"
+        },
+        {
+            "name": "message.write"
+        },
+        {
+            "name": "slashcommand"
+        },
+        {
+            "name": "persistence"
         }
     ]
 }
