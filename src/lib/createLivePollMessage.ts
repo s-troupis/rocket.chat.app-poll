@@ -7,18 +7,18 @@ import {
 import { IModalContext, IPoll } from '../definition';
 import { createPollBlocks } from './createPollBlocks';
 
-export async function createLivePollMessage(data: IUIKitViewSubmitIncomingInteraction, read: IRead, modify: IModify, persistence: IPersistence, uid: string, pollIndex: number) {
+export async function createLivePollMessage(data: any, read: IRead, modify: IModify, persistence: IPersistence, uid: string, pollIndex: number) {
     const { view: { id } } = data;
 
     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, id);
-    const [record] = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
-    let anonymousOptions = [];
+    const [record] = await read.getPersistenceReader().readByAssociation(association) as any;
+    const anonymousOptions = [];
 
     if (!record.room) {
         throw new Error('Invalid room');
     }
 
-    const state = record["polls"][pollIndex];
+    const state = record.polls[pollIndex];
 
     const options = Object.entries<any>(state.poll || {})
         .filter(([key]) => key !== 'question' && key !== 'ttv')
@@ -52,27 +52,27 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
             visibility,
             singleChoice: mode === 'single',
             liveId: id,
-            pollIndex: pollIndex,
-            totalLivePolls: record["totalPolls"],
+            pollIndex,
+            totalLivePolls: record.totalPolls,
             activeLivePoll: true,
-            anonymousOptions
+            anonymousOptions,
         };
 
-        let livePollEndTime = new Date();
+        const livePollEndTime = new Date();
         // Convert state.ttv to integer and add it to livePollEndTime
         livePollEndTime.setSeconds(livePollEndTime.getSeconds() + (+state.poll.ttv));
         poll.livePollEndTime = new Intl.DateTimeFormat(
-            'en-GB', 
-            { 
-                timeZone:timeZone.value,
-                weekday: "long",
-                month: "long", 
-                year: "numeric", 
-                day: "2-digit", 
-                hour: "2-digit", 
-                minute: "2-digit", 
-                second: "2-digit", 
-                timeZoneName: "long" 
+            'en-GB',
+            {
+                timeZone: timeZone.value,
+                weekday: 'long',
+                month: 'long',
+                year: 'numeric',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZoneName: 'long',
             }).format(livePollEndTime);
 
         const block = modify.getCreator().getBlockBuilder();
@@ -84,17 +84,17 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
         poll.msgId = messageId;
 
         // Attaching message id to data
-        data["message"] = {id: messageId};
+        data.message = {id: messageId};
 
         // Enforcing time limit on the poll
         const task = {
             id: 'nextPoll',
-            when: `${record["polls"][pollIndex]["poll"]["ttv"]} seconds`,
-            data: data
+            when: `${record.polls[pollIndex].poll.ttv} seconds`,
+            data,
           };
 
         await modify.getScheduler().scheduleOnce(task);
-        
+
         const pollAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, messageId);
 
         await persistence.createWithAssociation(poll, pollAssociation);

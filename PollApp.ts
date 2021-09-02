@@ -14,10 +14,11 @@ import {
     UIKitBlockInteractionContext,
     UIKitViewSubmitInteractionContext,
 } from '@rocket.chat/apps-engine/definition/uikit';
+import { addOptionModal } from './src/lib/addOptionModal';
 import { createLivePollMessage } from './src/lib/createLivePollMessage';
 import { createLivePollModal } from './src/lib/createLivePollModal';
-import { addOptionModal } from './src/lib/addOptionModal';
 
+import timeZones from './src/assets/timezones';
 import { pollVisibility } from './src/definition';
 import { createMixedVisibilityModal } from './src/lib/createMixedVisibilityModal';
 import { createPollMessage } from './src/lib/createPollMessage';
@@ -27,7 +28,6 @@ import { nextPollMessage } from './src/lib/nextPollMessage';
 import { updatePollMessage } from './src/lib/updatePollMessage';
 import { votePoll } from './src/lib/votePoll';
 import { PollCommand } from './src/PollCommand';
-import timeZones from './src/assets/timezones';
 export class PollApp extends App implements IUIKitInteractionHandler {
 
     constructor(info: IAppInfo, logger: ILogger) {
@@ -59,7 +59,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     },
                 } = data.view as any;
 
-            if (!state) {
+                if (!state) {
                 return context.getInteractionResponder().viewErrorResponse({
                     viewId: data.view.id,
                     errors: {
@@ -68,7 +68,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 });
             }
 
-            if (state.config && state.config.visibility !== pollVisibility.mixed) {
+                if (state.config && state.config.visibility !== pollVisibility.mixed) {
                 try {
                     await createPollMessage(data, read, modify, persistence, data.user.id);
                 } catch (err) {
@@ -95,7 +95,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 }
             }
 
-            return {
+                return {
                 success: true,
             };
         } else if (/create-live-poll-modal/.test(id)) {
@@ -120,17 +120,17 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 });
             }
             const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, data.view.id);
-            const [readData] = await read.getPersistenceReader().readByAssociation(association);
-            const polls = readData["polls"] || [];
-            const pollIndex = +readData["pollIndex"] + 1
-            const totalPolls = +readData["totalPolls"]
+            const [readData] = await read.getPersistenceReader().readByAssociation(association) as any;
+            const polls = readData.polls || [];
+            const pollIndex = +readData.pollIndex + 1;
+            const totalPolls = +readData.totalPolls;
             // Prompt user to enter values for poll if left blank
             try {
 
                 if (!state.poll || !state.poll.question || state.poll.question.trim() === '') {
                     throw { question: 'Please type your question here' };
                 }
-                if(!state.poll || !state.poll.ttv || isNaN(+state.poll.ttv)) {
+                if (!state.poll || !state.poll.ttv || isNaN(+state.poll.ttv)) {
                     throw { ttv: 'Please enter a valid time for the poll to end' };
                 }
                 if (!state.poll['option-0'] || state.poll['option-0'] === '') {
@@ -149,30 +149,30 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     viewId: data.view.id,
                     errors: err,
                 });
-            }   
+            }
             polls.push(state);
-            readData["polls"] = polls;
-            readData["pollIndex"] = pollIndex;
-            readData["user"] = data.user;
-            readData["appId"] = data.appId;
-            readData["view"] = data.view;
-            readData["triggerId"] = data.triggerId;
+            readData.polls = polls;
+            readData.pollIndex = pollIndex;
+            readData.user = data.user;
+            readData.appId = data.appId;
+            readData.view = data.view;
+            readData.triggerId = data.triggerId;
             await persistence.updateByAssociation(association, readData, true);
-            if(pollIndex === totalPolls){
-                const pollId = `live-${Math.random().toString(36).slice(7)}`
+            if (pollIndex === totalPolls) {
+                const pollId = `live-${Math.random().toString(36).slice(7)}`;
                 const livePollAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, pollId);
                 await persistence.createWithAssociation(readData, livePollAssociation);
                 try {
-                    if(readData["save"]){
+                    if (readData.save) {
                         const message = modify
                              .getCreator()
                              .startMessage()
                              .setSender(data.user)
                              .setText(`Live Poll has been saved with id ${pollId}. Use \`/poll live load ${pollId}\` to start.`)
                              .setUsernameAlias('Poll');
-    
-                        if (readData["room"]) {
-                                message.setRoom(readData["room"]);
+
+                        if (readData.room) {
+                                message.setRoom(readData.room);
                         }
                         modify
                              .getNotifier()
@@ -180,7 +180,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                                  data.user,
                                  message.getMessage(),
                              );
-                        
+
                     } else {
                         await createLivePollMessage(data, read, modify, persistence, data.user.id, 0);
                     }
@@ -190,10 +190,10 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         viewId: data.view.id,
                         errors: err,
                     });
-                }   
+                }
         } else {
 
-        const modal = await createLivePollModal({id: data.view.id, question: "", persistence, modify, data, pollIndex, totalPolls});
+        const modal = await createLivePollModal({id: data.view.id, question: '', persistence, modify, data, pollIndex, totalPolls});
         return context.getInteractionResponder().updateModalViewResponse(modal);
         }
             } else if (/create-mixed-visibility-modal/.test(id)) {
@@ -283,16 +283,15 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
             case 'addChoice': {
                 let modal;
-                if(data.value && data.value.includes('live-')) {
+                if (data.value && data.value.includes('live-')) {
                     modal = await createLivePollModal({
-                        id: data.container.id, 
-                        data, persistence, modify, 
-                        options: parseInt(data.value.split('-')[1], 10), 
-                        pollIndex: parseInt(data.value.split('-')[2], 10), 
-                        totalPolls: parseInt(data.value.split('-')[3], 10)
+                        id: data.container.id,
+                        data, persistence, modify,
+                        options: parseInt(data.value.split('-')[1], 10),
+                        pollIndex: parseInt(data.value.split('-')[2], 10),
+                        totalPolls: parseInt(data.value.split('-')[3], 10),
                     });
-                }
-                else {
+                } else {
                  modal = await createPollModal({ id: data.container.id, data, persistence, modify, options: parseInt(String(data.value), 10) });
                 }
                 return context.getInteractionResponder().updateModalViewResponse(modal);
@@ -369,7 +368,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 processor: async (jobContext, read, modify, http, persis) => {
                     try {
                         const logger = this.getLogger();
-                        await nextPollMessage({ data:jobContext, read, persistence:persis, modify, logger })
+                        await nextPollMessage({ data: jobContext, read, persistence: persis, modify, logger });
 
                     } catch (e) {
                         const { room } = jobContext.room;
@@ -379,7 +378,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                              .setSender(jobContext.user)
                              .setText(e.message)
                              .setUsernameAlias('Poll');
-    
+
                         if (room) {
                                 errorMessage.setRoom(room);
                         }
@@ -390,14 +389,14 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                                  errorMessage.getMessage(),
                              );
                     }
-                }
+                },
             },
         ]);
         await configuration.slashCommands.provideSlashCommand(new PollCommand(this));
         await configuration.settings.provideSetting({
             id : 'use-user-name',
-            i18nLabel: 'Use name attribute to display voters, instead of username',
-            i18nDescription: 'When checked, display voters as full user names instead of username',
+            i18nLabel: 'use_user_name_label',
+            i18nDescription: 'use_user_name_description',
             required: false,
             type: SettingType.BOOLEAN,
             public: true,
@@ -410,10 +409,10 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             required: true,
             type: SettingType.SELECT,
             public: true,
-            packageValue: "America/Danmarkshavn",
-            value: "America/Danmarkshavn",
-            values: timeZones.timeZones.map(tz => ({
-                i18nLabel: `${tz.value} (UTC ${tz.offset >= 0? "+ " + tz.offset : "- " + Math.abs(tz.offset)} )`,
+            packageValue: 'America/Danmarkshavn',
+            value: 'America/Danmarkshavn',
+            values: timeZones.timeZones.map((tz) => ({
+                i18nLabel: `${tz.value} (UTC ${tz.offset >= 0 ? '+ ' + tz.offset : '- ' + Math.abs(tz.offset)} )`,
                 key: tz.utc[0],
             })),
         });

@@ -28,7 +28,7 @@ export interface IPoll {
     pollIndex?: number;
     totalLivePolls?: number;
     activeLivePoll?: boolean;
-    livePollEndTime?: string
+    livePollEndTime?: string;
     anonymousOptions: Array<string>;
     allowAddingOptions?: boolean;
 }

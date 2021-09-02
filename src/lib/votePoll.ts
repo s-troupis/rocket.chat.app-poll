@@ -11,7 +11,7 @@ export async function votePoll({ data, read, persistence, modify, pollIndex, tot
     persistence: IPersistence,
     modify: IModify,
     pollIndex?: number,
-    totalPolls?: number
+    totalPolls?: number,
 }) {
     if (!data.message) {
         return {

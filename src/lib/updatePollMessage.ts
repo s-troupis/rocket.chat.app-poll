@@ -61,9 +61,9 @@ export async function updatePollMessage({
             .getEnvironmentReader()
             .getSettings()
             .getById('use-user-name');
-        
+
         const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
-        
+
         createPollBlocks(
             block,
             poll.question,

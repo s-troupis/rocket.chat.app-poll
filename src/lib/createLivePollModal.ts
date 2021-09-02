@@ -13,11 +13,11 @@ export async function createLivePollModal({ id = '', question, persistence, data
     modify: IModify,
     options?: number,
     pollIndex: number,
-    totalPolls: number
+    totalPolls: number,
 }): Promise<IUIKitModalViewParam> {
     const viewId = id || `create-live-poll-modal-${uuid()}`;
 
-    if(pollIndex === 0) {
+    if (pollIndex === 0) {
         const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
         await persistence.updateByAssociation(association, data, true);
     }
@@ -27,11 +27,11 @@ export async function createLivePollModal({ id = '', question, persistence, data
         blockId: 'poll',
         element: block.newPlainTextInputElement({ initialValue: question, actionId: 'question' }),
         label: block.newPlainTextObject('Insert your question'),
-    })
-    
+    });
+
     block.addInputBlock({
         blockId: 'poll',
-        element: block.newPlainTextInputElement({ actionId: 'ttv', placeholder: block.newPlainTextObject('Number of seconds'),}),
+        element: block.newPlainTextInputElement({ actionId: 'ttv', placeholder: block.newPlainTextObject('Number of seconds')}),
         label: block.newPlainTextObject('Time limit to vote'),
     })
     .addDividerBlock();
@@ -100,6 +100,6 @@ export async function createLivePollModal({ id = '', question, persistence, data
             text: block.newPlainTextObject('Dismiss'),
         }),
         blocks: block.getBlocks(),
-        clearOnClose: true
+        clearOnClose: true,
     };
 }

@@ -21,27 +21,27 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
         },
     });
 
-    if(poll.activeLivePoll) {
+    if (poll.activeLivePoll && !poll.finished) {
         block.addContextBlock({
             elements: [
                 block.newMarkdownTextObject(`The poll will finish at ${poll.livePollEndTime}`),
             ],
         });
     }
-    
+
     if (poll.finished) {
         block.addContextBlock({
             elements: [
                 block.newMarkdownTextObject(`The poll has been finished at ${new Intl.DateTimeFormat('en-GB', {
-                    timeZone:timeZone, 
-                    weekday: "long", 
-                    month: "long", 
-                    year: "numeric", 
-                    day:"2-digit", 
-                    hour:"2-digit", 
-                    minute:"2-digit", 
-                    second: "2-digit", 
-                    timeZoneName: "long"
+                    timeZone,
+                    weekday: 'long',
+                    month: 'long',
+                    year: 'numeric',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    timeZoneName: 'long',
                 }).format(new Date())}`),
             ],
         });

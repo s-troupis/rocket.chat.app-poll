@@ -36,16 +36,19 @@ export async function nextPollMessage({ data, read, persistence, modify, logger 
     }
 
     try {
-        //Check if poll already marked inactive
-        if(poll.activeLivePoll) {
+        // Check if poll already marked inactive
+        if (poll.activeLivePoll) {
 
             // Mark poll as inactive
-            poll.activeLivePoll = false
+            poll.activeLivePoll = false;
             // Finish poll if not finished
-            if(!poll.finished)
-            {
+            if (!poll.finished) {
                 await finishPoll(poll, { persis: persistence });
             }
+
+            // Update poll association with activeLivePoll set to false
+            const pollAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, poll.msgId);
+            await persistence.updateByAssociation(pollAssociation, poll, true);
 
             const message = await modify.getUpdater().message(data.message.id as string, data.user);
             message.setEditor(message.getSender());
@@ -60,18 +63,17 @@ export async function nextPollMessage({ data, read, persistence, modify, logger 
             message.setBlocks(block);
 
             // End poll and send next poll
-            if(poll.pollIndex !== undefined && poll.totalLivePolls && poll.pollIndex < poll.totalLivePolls - 1) {
+            if (poll.pollIndex !== undefined && poll.totalLivePolls && poll.pollIndex < poll.totalLivePolls - 1) {
                 // Send updated message
                 modify.getUpdater().finish(message);
                 // Create next poll
-                data.view = {id: poll.liveId}
+                data.view = {id: poll.liveId};
                 await createLivePollMessage(data, read, modify, persistence, data.user.id, poll.pollIndex + 1);
             } else {
-
-            // Finish current poll
-            return modify.getUpdater().finish(message);
-            }  
-        }      
+                // Finish current poll
+                return modify.getUpdater().finish(message);
+            }
+        }
     } catch (e) {
         logger.error('Error', e);
     }

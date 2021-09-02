@@ -19,21 +19,21 @@ export class PollCommand implements ISlashCommand {
 
         const [subcommand] = context.getArguments();
 
-        if(subcommand === 'live') {
-            let totalPolls; 
-            let question; 
+        if (subcommand === 'live') {
+            let totalPolls;
+            let question;
             let save;
-            if(context.getArguments()[1] === 'save') {
+            if (context.getArguments()[1] === 'save') {
                 totalPolls = +context.getArguments()[2]; // Convert to number
                 question = context.getArguments().slice(3).join(' ');
-                save = true
-            } else if(context.getArguments()[1] === 'load') {
+                save = true;
+            } else if (context.getArguments()[1] === 'load') {
                 const pollId = context.getArguments()[2];
-                if(pollId) {
+                if (pollId) {
                     try {
                         const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, pollId);
-                        const [readData] = await read.getPersistenceReader().readByAssociation(association);
-                        if(!readData) {
+                        const [readData] = await read.getPersistenceReader().readByAssociation(association) as any;
+                        if (!readData) {
                             const messageStructure = await modify.getCreator().startMessage();
                             const sender = context.getSender(); // the user calling the slashcommand
                             const room = context.getRoom(); // the current room
@@ -52,41 +52,40 @@ export class PollCommand implements ISlashCommand {
                         }
                         await createLivePollMessage(
                             {
-                                appId: readData["appId"], 
-                                view: readData["view"], 
-                                triggerId: readData["triggerId"], 
-                                user: readData["user"] 
-                            }, 
-                            read, 
-                            modify, 
-                            persis, 
-                            readData["user"]["id"], 
-                            0
+                                appId: readData.appId,
+                                view: readData.view,
+                                triggerId: readData.triggerId,
+                                user: readData.user,
+                            },
+                            read,
+                            modify,
+                            persis,
+                            readData.user.id,
+                            0,
                             );
-                    } catch(e) {
+                    } catch (e) {
                         throw new Error(`Unable to load poll with id ${pollId}. Error ${e}`);
                     }
                 } else {
-                    this.app.getLogger().log("Please enter a valid poll id");
+                    this.app.getLogger().log('Please enter a valid poll id');
                 }
-                    return;
+                return;
             } else {
                 totalPolls = +context.getArguments()[1]; // Convert to number
                 question = context.getArguments().slice(2).join(' ');
-                save = false
+                save = false;
             }
-            if(totalPolls && triggerId) {
+            if (totalPolls && triggerId) {
                 const data = {
                     room: (context.getRoom() as any).value,
                     threadId: context.getThreadId(),
                     totalPolls,
                     pollIndex: 0,
-                    save
+                    save,
                 };
                 const modal = await createLivePollModal({question, persistence: persis, modify, data, pollIndex: 0, totalPolls});
                 await modify.getUiController().openModalView(modal, {triggerId}, context.getSender());
-            }
-            else {
+            } else {
                 const messageStructure = await modify.getCreator().startMessage();
                 const sender = context.getSender(); // the user calling the slashcommand
                 const room = context.getRoom(); // the current room
@@ -94,7 +93,7 @@ export class PollCommand implements ISlashCommand {
                 messageStructure
                 .setSender(sender)
                 .setRoom(room)
-                .setText("Please enter the number of live polls to create. Example usage: \`/poll live 2\` or \`/poll live save 2\`");
+                .setText('Please enter the number of live polls to create. Example usage: \`/poll live 2\` or \`/poll live save 2\`');
 
                 await modify
                     .getNotifier()
