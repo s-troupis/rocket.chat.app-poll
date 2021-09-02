@@ -60,7 +60,7 @@ export async function nextPollMessage({ data, read, persistence, modify, logger 
             message.setBlocks(block);
 
             // End poll and send next poll
-            if(poll.pollIndex!=undefined && poll.totalLivePolls && poll.pollIndex < poll.totalLivePolls - 1) {
+            if(poll.pollIndex !== undefined && poll.totalLivePolls && poll.pollIndex < poll.totalLivePolls - 1) {
                 // Send updated message
                 modify.getUpdater().finish(message);
                 // Create next poll

@@ -20,7 +20,9 @@ export class PollCommand implements ISlashCommand {
         const [subcommand] = context.getArguments();
 
         if(subcommand === 'live') {
-            let totalPolls, question, save;
+            let totalPolls; 
+            let question; 
+            let save;
             if(context.getArguments()[1] === 'save') {
                 totalPolls = +context.getArguments()[2]; // Convert to number
                 question = context.getArguments().slice(3).join(' ');
@@ -48,7 +50,19 @@ export class PollCommand implements ISlashCommand {
                                  messageStructure.getMessage(),
                              );
                         }
-                        await createLivePollMessage({appId: readData["appId"], view: readData["view"], triggerId: readData["triggerId"], user: readData["user"] }, read, modify, persis, readData["user"]["id"], 0);
+                        await createLivePollMessage(
+                            {
+                                appId: readData["appId"], 
+                                view: readData["view"], 
+                                triggerId: readData["triggerId"], 
+                                user: readData["user"] 
+                            }, 
+                            read, 
+                            modify, 
+                            persis, 
+                            readData["user"]["id"], 
+                            0
+                            );
                     } catch(e) {
                         throw new Error(`Unable to load poll with id ${pollId}. Error ${e}`);
                     }

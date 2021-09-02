@@ -160,8 +160,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             await persistence.updateByAssociation(association, readData, true);
             if(pollIndex === totalPolls){
                 const pollId = `live-${Math.random().toString(36).slice(7)}`
-                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, pollId);
-                await persistence.createWithAssociation(readData, association);
+                const livePollAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, pollId);
+                await persistence.createWithAssociation(readData, livePollAssociation);
                 try {
                     if(readData["save"]){
                         const message = modify
@@ -284,7 +284,13 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             case 'addChoice': {
                 let modal;
                 if(data.value && data.value.includes('live-')) {
-                    modal = await createLivePollModal({id: data.container.id, data, persistence, modify, options: parseInt(data.value.split('-')[1], 10), pollIndex: parseInt(data.value.split('-')[2], 10), totalPolls: parseInt(data.value.split('-')[3], 10)});
+                    modal = await createLivePollModal({
+                        id: data.container.id, 
+                        data, persistence, modify, 
+                        options: parseInt(data.value.split('-')[1], 10), 
+                        pollIndex: parseInt(data.value.split('-')[2], 10), 
+                        totalPolls: parseInt(data.value.split('-')[3], 10)
+                    });
                 }
                 else {
                  modal = await createPollModal({ id: data.container.id, data, persistence, modify, options: parseInt(String(data.value), 10) });

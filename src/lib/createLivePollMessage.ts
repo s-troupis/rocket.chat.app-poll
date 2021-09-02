@@ -61,7 +61,19 @@ export async function createLivePollMessage(data: IUIKitViewSubmitIncomingIntera
         let livePollEndTime = new Date();
         // Convert state.ttv to integer and add it to livePollEndTime
         livePollEndTime.setSeconds(livePollEndTime.getSeconds() + (+state.poll.ttv));
-        poll.livePollEndTime = new Intl.DateTimeFormat('en-GB', { timeZone:timeZone.value, weekday: "long", month: "long", year: "numeric", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", timeZoneName: "long" }).format(livePollEndTime);
+        poll.livePollEndTime = new Intl.DateTimeFormat(
+            'en-GB', 
+            { 
+                timeZone:timeZone.value,
+                weekday: "long",
+                month: "long", 
+                year: "numeric", 
+                day: "2-digit", 
+                hour: "2-digit", 
+                minute: "2-digit", 
+                second: "2-digit", 
+                timeZoneName: "long" 
+            }).format(livePollEndTime);
 
         const block = modify.getCreator().getBlockBuilder();
         createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions);

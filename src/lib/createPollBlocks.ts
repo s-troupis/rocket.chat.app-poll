@@ -32,7 +32,17 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
     if (poll.finished) {
         block.addContextBlock({
             elements: [
-                block.newMarkdownTextObject(`The poll has been finished at ${new Intl.DateTimeFormat('en-GB', { timeZone:timeZone, weekday: "long", month: "long", year: "numeric", day:"2-digit", hour:"2-digit", minute:"2-digit", second: "2-digit", timeZoneName: "long"}).format(new Date())}`),
+                block.newMarkdownTextObject(`The poll has been finished at ${new Intl.DateTimeFormat('en-GB', {
+                    timeZone:timeZone, 
+                    weekday: "long", 
+                    month: "long", 
+                    year: "numeric", 
+                    day:"2-digit", 
+                    hour:"2-digit", 
+                    minute:"2-digit", 
+                    second: "2-digit", 
+                    timeZoneName: "long"
+                }).format(new Date())}`),
             ],
         });
     }
@@ -89,7 +99,7 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
     });
 
     // Next Poll Button if live poll
-    if (poll.pollIndex != undefined && poll.totalLivePolls && (poll.pollIndex < poll.totalLivePolls - 1) && poll.activeLivePoll) {
+    if (poll.pollIndex !== undefined && poll.totalLivePolls && (poll.pollIndex < poll.totalLivePolls - 1) && poll.activeLivePoll) {
         block
         .addActionsBlock({
             elements: [
