@@ -4,9 +4,9 @@
     "requiredApiVersion": "^1.12.0",
     "iconFile": "icon.png",
     "author": {
-        "name": "Diego Sampaio",
-        "homepage": "https://github.com/sampaiodiego/rocket.chat.app-poll",
-        "support": "https://github.com/sampaiodiego/rocket.chat.app-poll"
+        "name": "Rocket.Chat",
+        "homepage": "https://github.com/RocketChat/rocket.chat.app-poll",
+        "support": "https://github.com/RocketChat/rocket.chat.app-poll/issues"
     },
     "name": "Poll",
     "nameSlug": "poll",
