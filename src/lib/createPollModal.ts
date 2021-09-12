@@ -17,10 +17,10 @@ export async function createPollModal({ id = '', question, persistence, data, mo
     const viewId = id || `create-poll-modal-${uuid()}`;
 
     const viewAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
-    await persistence.createWithAssociation(data, viewAssociation);
+    await persistence.updateByAssociation(viewAssociation, data, true);
 
     const optionsAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'options');
-    await persistence.createWithAssociations({ options }, [viewAssociation, optionsAssociation]);
+    await persistence.updateByAssociations([viewAssociation, optionsAssociation], { options }, true);
 
     const block = modify.getCreator().getBlockBuilder();
     block.addInputBlock({
