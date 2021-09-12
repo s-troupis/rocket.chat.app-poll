@@ -1,10 +1,6 @@
 import { IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import { RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
-import {
-    IUIKitViewSubmitIncomingInteraction,
-} from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
-
-import { IModalContext, IPoll } from '../definition';
+import { IPoll } from '../definition';
 import { createPollBlocks } from './createPollBlocks';
 
 export async function createLivePollMessage(data: any, read: IRead, modify: IModify, persistence: IPersistence, uid: string, pollIndex: number) {
@@ -34,7 +30,7 @@ export async function createLivePollMessage(data: any, read: IRead, modify: IMod
 
         const builder = modify.getCreator().startMessage()
             .setUsernameAlias((showNames.value && data.user.name) || data.user.username)
-            .setRoom(record.room)
+            .setRoom(data.room ? data.room : record.room)
             .setText(state.poll.question);
 
         // if poll created from inside a thread, need to set the thread id

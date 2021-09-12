@@ -56,6 +56,7 @@ export class PollCommand implements ISlashCommand {
                                 view: readData.view,
                                 triggerId: readData.triggerId,
                                 user: readData.user,
+                                room: context.getRoom(),
                             },
                             read,
                             modify,
