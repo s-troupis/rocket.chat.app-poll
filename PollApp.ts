@@ -181,8 +181,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 const viewAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
                 const optionsAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'options');
 
-                const existingOptions: undefined | { options: number } = await read.getPersistenceReader()
-                    .readByAssociations([viewAssociation, optionsAssociation])[0];
+                const [existingOptions] = await read.getPersistenceReader()
+                    .readByAssociations([viewAssociation, optionsAssociation]) as any;
 
                 const modal = await createPollModal({ id: viewId,
                     data,
