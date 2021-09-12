@@ -7,7 +7,7 @@ import {
     IRead,
 } from '@rocket.chat/apps-engine/definition/accessors';
 import { App } from '@rocket.chat/apps-engine/definition/App';
-import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
 import {
     IUIKitInteractionHandler,
@@ -177,7 +177,20 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             }
 
             case 'mode': {
-                const modal = await createPollModal({ id: data.container.id, data, persistence, modify, mode: data.value });
+                const viewId = data.container.id;
+                const viewAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
+                const optionsAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'options');
+
+                const existingOptions: undefined | { options: number } = await read.getPersistenceReader()
+                    .readByAssociations([viewAssociation, optionsAssociation])[0];
+
+                const modal = await createPollModal({ id: viewId,
+                    data,
+                    persistence,
+                    modify,
+                    mode: data.value,
+                    ...existingOptions && existingOptions.options && { options: existingOptions.options },
+                });
 
                 return context.getInteractionResponder().updateModalViewResponse(modal);
             }
