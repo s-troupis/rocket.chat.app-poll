@@ -16,8 +16,11 @@ export async function createPollModal({ id = '', question, persistence, data, mo
 }): Promise<IUIKitModalViewParam> {
     const viewId = id || `create-poll-modal-${uuid()}`;
 
-    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
-    await persistence.createWithAssociation(data, association);
+    const viewAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
+    await persistence.updateByAssociation(viewAssociation, data, true);
+
+    const optionsAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'options');
+    await persistence.updateByAssociations([viewAssociation, optionsAssociation], { options }, true);
 
     const block = modify.getCreator().getBlockBuilder();
     block.addInputBlock({
