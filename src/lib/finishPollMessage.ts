@@ -78,6 +78,10 @@ export async function finishPollMessage({
             .getEnvironmentReader()
             .getSettings()
             .getById('wordcloud-api');
+        const timeZone = await read
+            .getEnvironmentReader()
+            .getSettings()
+            .getById('timezone');
 
         if (poll.wordCloud && wordCloudAPI.value) {
             let wordList = [] as Array<string>;
@@ -97,6 +101,7 @@ export async function finishPollMessage({
                     poll.options,
                     poll,
                     showNames.value,
+                    timeZone.value,
                     poll.anonymousOptions,
                     wordCloudAPI.value,
                 );
@@ -120,6 +125,7 @@ export async function finishPollMessage({
                     poll.options,
                     poll,
                     showNames.value,
+                    timeZone.value,
                     poll.anonymousOptions,
                     false,
                 );
@@ -135,6 +141,7 @@ export async function finishPollMessage({
                 poll.options,
                 poll,
                 showNames.value,
+                timeZone.value,
                 poll.anonymousOptions,
                 wordCloudAPI.value,
             );

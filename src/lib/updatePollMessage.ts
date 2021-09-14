@@ -63,12 +63,15 @@ export async function updatePollMessage({
             .getById('use-user-name');
         const wordCloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
 
+        const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
+
         createPollBlocks(
             block,
             poll.question,
             poll.options,
             poll,
             showNames.value,
+            timeZone.value,
             poll.anonymousOptions,
             wordCloudAPI.value,
         );

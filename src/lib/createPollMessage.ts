@@ -37,28 +37,54 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         throw new Error('Invalid room');
     }
 
-    const options = Object.entries<any>(state.poll || {})
-        .filter(([key]) => key !== 'question')
-        .map(([, option]) => option)
-        .filter((option) => option.trim() !== '');
+    // Declare options as an array of string
+    let options = [] as Array<string>;
 
-    if (!options.length) {
-        throw {
-            'option-0': 'Please provide some options',
-            'option-1': 'Please provide some options',
-        };
-    }
+    if (state.config.mode !== 'multiple' && state.config.mode !== 'single') {
+        switch (state.config.mode) {
+            case 'over-under':
+               options = ['Overrated', 'Appropriately Rated', 'Never Tried', 'Underrated'];
+               break;
+            case '1-to-5':
+                options = Array.from({length: 5}, (_, i) => '' + (i + 1));
+                break;
+            case '1-to-10':
+                options = Array.from({length: 10}, (_, i) => '' + (i + 1));
+                break;
+            case 'agree-disagree':
+                options = ['Agree', 'Disagree'];
+                break;
+            case 'emoji-rank':
+                options = ['🤩 Great', '🙂 Good', '😐 Neutral', '🙁 Bad', '😢 Awful'];
+                break;
+            default:
+                throw { mode: 'Invalid mode' };
+        }
+    } else {
 
-    if (options.length === 1) {
-        if (!state.poll['option-0'] || state.poll['option-0'] === '') {
+        options = Object.entries<any>(state.poll || {})
+            .filter(([key]) => key !== 'question')
+            .map(([, option]) => option)
+            .filter((option) => option.trim() !== '');
+
+        if (!options.length) {
             throw {
-                'option-0': 'Please provide one more option',
+                'option-0': 'Please provide some options',
+                'option-1': 'Please provide some options',
             };
         }
-        if (!state.poll['option-1'] || state.poll['option-1'] === '') {
-            throw {
-                'option-1': 'Please provide one more option',
-            };
+
+        if (options.length === 1) {
+            if (!state.poll['option-0'] || state.poll['option-0'] === '') {
+                throw {
+                    'option-0': 'Please provide one more option',
+                };
+            }
+            if (!state.poll['option-1'] || state.poll['option-1'] === '') {
+                throw {
+                    'option-1': 'Please provide one more option',
+                };
+            }
         }
     }
 
@@ -68,6 +94,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
 
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
         const wordCloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
+        const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
 
         const builder = modify.getCreator().startMessage()
             .setUsernameAlias((showNames.value && data.user.name) || data.user.username)
@@ -87,14 +114,14 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             totalVotes: 0,
             votes: options.map(() => ({ quantity: 0, voters: [] })),
             visibility,
-            singleChoice: mode === 'single',
+            singleChoice: mode !== 'multiple',
             wordCloud: wordCloud === 'enabled',
             anonymousOptions,
             allowAddingOptions: additionalChoices !== 'disallowAddingChoices',
         };
 
         const block = modify.getCreator().getBlockBuilder();
-        createPollBlocks(block, poll.question, options, poll, showNames.value, poll.anonymousOptions,  wordCloudAPI.value);
+        createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions,  wordCloudAPI.value);
 
         builder.setBlocks(block);
 
