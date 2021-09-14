@@ -24,6 +24,11 @@ export interface IPoll {
     finished?: boolean;
     visibility?: pollVisibility;
     singleChoice?: boolean;
+    liveId?: string;
+    pollIndex?: number;
+    totalLivePolls?: number;
+    activeLivePoll?: boolean;
+    livePollEndTime?: string;
     anonymousOptions: Array<string>;
     allowAddingOptions?: boolean;
 }

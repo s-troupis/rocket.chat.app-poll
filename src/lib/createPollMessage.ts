@@ -67,6 +67,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         const { mode = 'multiple', visibility = pollVisibility.open, additionalChoices = 'disallowAddingChoices' } = config;
 
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
+        const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
 
         const builder = modify.getCreator().startMessage()
             .setUsernameAlias((showNames.value && data.user.name) || data.user.username)
@@ -92,7 +93,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         };
 
         const block = modify.getCreator().getBlockBuilder();
-        createPollBlocks(block, poll.question, options, poll, showNames.value, poll.anonymousOptions);
+        createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions);
 
         builder.setBlocks(block);
 

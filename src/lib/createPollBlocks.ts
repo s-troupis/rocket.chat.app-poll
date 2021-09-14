@@ -4,7 +4,7 @@ import { IPoll, pollVisibility } from '../definition';
 import { buildVoteGraph } from './buildVoteGraph';
 import { buildVoters } from './buildVoters';
 
-export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean, anonymousOptions: Array<string>) {
+export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean, timeZone: string, anonymousOptions: Array<string>) {
     block.addSectionBlock({
         text: block.newPlainTextObject(question),
         ...!poll.finished && {
@@ -21,10 +21,28 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
         },
     });
 
+    if (poll.activeLivePoll && !poll.finished) {
+        block.addContextBlock({
+            elements: [
+                block.newMarkdownTextObject(`The poll will finish at ${poll.livePollEndTime}`),
+            ],
+        });
+    }
+
     if (poll.finished) {
         block.addContextBlock({
             elements: [
-                block.newMarkdownTextObject(`The poll has been finished at ${new Date().toUTCString()}`),
+                block.newMarkdownTextObject(`The poll has been finished at ${new Intl.DateTimeFormat('en-GB', {
+                    timeZone,
+                    weekday: 'long',
+                    month: 'long',
+                    year: 'numeric',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    timeZoneName: 'long',
+                }).format(new Date())}`),
             ],
         });
     }
@@ -79,6 +97,19 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
             ],
         });
     });
+
+    // Next Poll Button if live poll
+    if (poll.pollIndex !== undefined && poll.totalLivePolls && (poll.pollIndex < poll.totalLivePolls - 1) && poll.activeLivePoll) {
+        block
+        .addActionsBlock({
+            elements: [
+                block.newButtonElement({
+                    actionId: 'nextPoll',
+                    text: block.newPlainTextObject('Next Poll'),
+                }),
+            ],
+        });
+    }
 
     // Add Option button
     if (!poll.finished && poll.allowAddingOptions) {
