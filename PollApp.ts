@@ -353,6 +353,25 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                          );
                 }
             }
+
+            case 'mode': {
+                const viewId = data.container.id;
+                const viewAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
+                const optionsAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'options');
+
+                const [existingOptions] = await read.getPersistenceReader()
+                    .readByAssociations([viewAssociation, optionsAssociation]) as any;
+
+                const modal = await createPollModal({ id: viewId,
+                    data,
+                    persistence,
+                    modify,
+                    mode: data.value,
+                    ...existingOptions && existingOptions.options && { options: existingOptions.options },
+                });
+
+                return context.getInteractionResponder().updateModalViewResponse(modal);
+            }
         }
 
         return {

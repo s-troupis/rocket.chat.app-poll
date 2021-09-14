@@ -38,10 +38,35 @@ export async function createMixedVisibilityModal({
         state?: any;
     } = data.view;
 
-    const options = Object.entries<any>(state.poll || {})
-        .filter(([key]) => key !== 'question')
-        .map(([, option]) => option)
-        .filter((option) => option.trim() !== '');
+    // Declare options as an array of string
+    let options = [] as Array<string>;
+
+    if (state.config.mode !== 'multiple' && state.config.mode !== 'single') {
+        switch (state.config.mode) {
+            case 'over-under':
+               options = ['Overrated', 'Appropriately Rated', 'Never Tried', 'Underrated'];
+               break;
+            case '1-to-5':
+                options = Array.from({length: 5}, (_, i) => '' + (i + 1));
+                break;
+            case '1-to-10':
+                options = Array.from({length: 10}, (_, i) => '' + (i + 1));
+                break;
+            case 'agree-disagree':
+                options = ['Agree', 'Disagree'];
+                break;
+            case 'emoji-rank':
+                options = ['🤩 Great', '🙂 Good', '😐 Neutral', '🙁 Bad', '😢 Awful'];
+                break;
+            default:
+                options = [];
+        }
+    } else {
+        options = Object.entries<any>(state.poll || {})
+            .filter(([key]) => key !== 'question')
+            .map(([, option]) => option)
+            .filter((option) => option.trim() !== '');
+    }
 
     const block = modify.getCreator().getBlockBuilder();
     block.addSectionBlock({
