@@ -20,10 +20,10 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     // When createPollMessage is called from mixed visibility modal case
     // the second-last view id contains slashcommand data
     if ((record as IUIKitViewSubmitIncomingInteraction).view) {
-        const testAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, (record as IUIKitViewSubmitIncomingInteraction).view.id);
-        const [test] = await read.getPersistenceReader().readByAssociation(testAssociation) as Array<IModalContext>;
-        record.threadId = test.threadId;
-        record.room = test.room;
+        const prevAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, (record as IUIKitViewSubmitIncomingInteraction).view.id);
+        const [prev] = await read.getPersistenceReader().readByAssociation(prevAssociation) as Array<IModalContext>;
+        record.threadId = prev.threadId;
+        record.room = prev.room;
         // Extract anonymous options before state is modified
         anonymousOptions = state.mixedVisibility.anonymousOptions;
         state = (record as IUIKitViewSubmitIncomingInteraction).view.state;

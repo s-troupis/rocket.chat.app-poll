@@ -19,7 +19,7 @@ import { createLivePollMessage } from './src/lib/createLivePollMessage';
 import { createLivePollModal } from './src/lib/createLivePollModal';
 
 import timeZones from './src/assets/timezones';
-import { pollVisibility } from './src/definition';
+import { IModalContext, pollVisibility } from './src/definition';
 import { createMixedVisibilityModal } from './src/lib/createMixedVisibilityModal';
 import { createPollMessage } from './src/lib/createPollMessage';
 import { createPollModal } from './src/lib/createPollModal';
@@ -203,6 +203,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     state: {
                         mixedVisibility: {
                         anonymousOptions: any,
+                        additionalChoices?: string;
                         },
                     },
                 } = data.view as any;
@@ -284,7 +285,14 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
             case 'addChoice': {
                 let modal;
+                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, data.container.id);
+                const [record] = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
+                data.room = record.room;
+                (data as any).threadId = record.threadId;
                 if (data.value && data.value.includes('live-')) {
+                    (data as any).totalPolls = (record as any).totalPolls;
+                    (data as any).pollIndex = (record as any).pollIndex;
+                    (data as any).save = (record as any).save;
                     modal = await createLivePollModal({
                         id: data.container.id,
                         data, persistence, modify,
@@ -354,25 +362,32 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                              errorMessage.getMessage(),
                          );
                 }
+                break;
             }
 
             case 'mode': {
                 const viewId = data.container.id;
                 const viewAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
                 const optionsAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'options');
-
-                const [existingOptions] = await read.getPersistenceReader()
+                const [record] = await read.getPersistenceReader().readByAssociation(viewAssociation) as Array<IModalContext>;
+                data.room = record.room;
+                (data as any).threadId = record.threadId;
+                try {
+                    const [existingOptions] = await read.getPersistenceReader()
                     .readByAssociations([viewAssociation, optionsAssociation]) as any;
 
-                const modal = await createPollModal({ id: viewId,
-                    data,
-                    persistence,
-                    modify,
-                    mode: data.value,
-                    ...existingOptions && existingOptions.options && { options: existingOptions.options },
-                });
+                    const modal = await createPollModal({ id: viewId,
+                        data,
+                        persistence,
+                        modify,
+                        mode: data.value,
+                        ...existingOptions && existingOptions.options && { options: existingOptions.options },
+                    });
+                    return context.getInteractionResponder().updateModalViewResponse(modal);
 
-                return context.getInteractionResponder().updateModalViewResponse(modal);
+                } catch (e) {
+                    this.getLogger().log(e);
+                }
             }
         }
 
@@ -392,7 +407,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         await nextPollMessage({ data: jobContext, read, persistence: persis, modify, logger });
 
                     } catch (e) {
-                        const { room } = jobContext.room;
                         const errorMessage = modify
                              .getCreator()
                              .startMessage()
@@ -400,8 +414,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                              .setText(e.message)
                              .setUsernameAlias('Poll');
 
-                        if (room) {
-                                errorMessage.setRoom(room);
+                        if (jobContext.room) {
+                                errorMessage.setRoom(jobContext.room);
                         }
                         await modify
                              .getNotifier()
@@ -432,7 +446,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             public: true,
             packageValue: 'https://quickchart.io/wordcloud',
             value: 'https://quickchart.io/wordcloud',
-        })
+        });
         await configuration.settings.provideSetting({
             id : 'timezone',
             i18nLabel: 'timezone_label',

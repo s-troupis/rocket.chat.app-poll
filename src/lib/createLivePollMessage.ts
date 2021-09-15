@@ -26,6 +26,7 @@ export async function createLivePollMessage(data: any, read: IRead, modify: IMod
         const { mode = 'multiple', visibility = 'open' } = config;
 
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
+        const wordCloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
         const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
 
         const builder = modify.getCreator().startMessage()
@@ -72,7 +73,7 @@ export async function createLivePollMessage(data: any, read: IRead, modify: IMod
             }).format(livePollEndTime);
 
         const block = modify.getCreator().getBlockBuilder();
-        createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions);
+        createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions, wordCloudAPI.value);
 
         builder.setBlocks(block);
 

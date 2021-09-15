@@ -115,6 +115,7 @@ export async function finishPollMessage({
                 .startMessage()
                 .setUsernameAlias(data.user.username)
                 .setRoom({ ...data.room } as IRoom)
+                .setThreadId(data.message.threadId)
                 .addAttachment(attachment);
 
                 return modify.getCreator().finish(wordCloudBuilder);

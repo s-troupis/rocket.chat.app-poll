@@ -108,7 +108,7 @@ export async function createPollModal({ id = '', question, persistence, data, mo
                         },
                     ],
                 }),
-                block.newStaticSelectElement({
+                ...(mode === 'multiple' || mode === 'single' || !mode) ? [block.newStaticSelectElement({
                     placeholder: block.newPlainTextObject('Disallow Adding Choices'),
                     actionId: 'additionalChoices',
                     initialValue: 'disallowAddingChoices',
@@ -122,7 +122,7 @@ export async function createPollModal({ id = '', question, persistence, data, mo
                             value: 'disallowAddingChoices',
                         },
                     ],
-                }),
+                })] : [],
                 block.newStaticSelectElement({
                     placeholder: block.newPlainTextObject('Wordcloud disabled'),
                     actionId: 'wordCloud',
