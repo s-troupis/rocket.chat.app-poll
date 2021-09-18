@@ -24,6 +24,7 @@ export interface IPoll {
     finished?: boolean;
     visibility?: pollVisibility;
     singleChoice?: boolean;
+    wordCloud?: boolean;
     liveId?: string;
     pollIndex?: number;
     totalLivePolls?: number;

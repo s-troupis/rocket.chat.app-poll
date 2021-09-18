@@ -4,7 +4,7 @@ import { IPoll, pollVisibility } from '../definition';
 import { buildVoteGraph } from './buildVoteGraph';
 import { buildVoters } from './buildVoters';
 
-export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean, timeZone: string, anonymousOptions: Array<string>) {
+export function createPollBlocks(block: BlockBuilder, question: string, options: Array<any>, poll: IPoll, showNames: boolean, timeZone: string, anonymousOptions: Array<string>, wordCloud: boolean) {
     block.addSectionBlock({
         text: block.newPlainTextObject(question),
         ...!poll.finished && {
@@ -125,7 +125,20 @@ export function createPollBlocks(block: BlockBuilder, question: string, options:
     }
 
     // Add text block for total votes
-    block.addDividerBlock(),
+    block.addDividerBlock();
+
+    // Word cloud when Internet access disabled
+    if (poll.finished && poll.wordCloud && !wordCloud) {
+        const responseSummary = poll.votes.map((vote, index) => {
+            return `${poll.options[index]}(${vote.quantity})`;
+        }).join(' ');
+        block.addContextBlock({
+            elements: [
+                block.newMarkdownTextObject(`Poll summary: ${responseSummary}`),
+            ],
+        });
+    }
+
     block.addContextBlock({
         elements: [
             block.newMarkdownTextObject(`${ poll.totalVotes } votes ${ poll.finished ? '| Final Results' : '' }`),

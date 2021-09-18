@@ -49,21 +49,22 @@ export class PollCommand implements ISlashCommand {
                                  sender,
                                  messageStructure.getMessage(),
                              );
+                        } else {
+                            await createLivePollMessage(
+                                {
+                                    appId: readData.appId,
+                                    view: readData.view,
+                                    triggerId: readData.triggerId,
+                                    user: readData.user,
+                                    room: context.getRoom(),
+                                },
+                                read,
+                                modify,
+                                persis,
+                                readData.user.id,
+                                0,
+                                );
                         }
-                        await createLivePollMessage(
-                            {
-                                appId: readData.appId,
-                                view: readData.view,
-                                triggerId: readData.triggerId,
-                                user: readData.user,
-                                room: context.getRoom(),
-                            },
-                            read,
-                            modify,
-                            persis,
-                            readData.user.id,
-                            0,
-                            );
                     } catch (e) {
                         throw new Error(`Unable to load poll with id ${pollId}. Error ${e}`);
                     }
@@ -113,9 +114,12 @@ export class PollCommand implements ISlashCommand {
             const question = context.getArguments().join(' ');
 
             if (triggerId) {
-                const modal = await createPollModal({ question, persistence: persis, modify, data });
-
-                await modify.getUiController().openModalView(modal, { triggerId }, context.getSender());
+                try {
+                    const modal = await createPollModal({ question, persistence: persis, modify, data });
+                    await modify.getUiController().openModalView(modal, { triggerId }, context.getSender());
+                } catch (e) {
+                    throw new Error(`Unable to open poll modal. Error ${e}`);
+                }
             }
         }
     }
