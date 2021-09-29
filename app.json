@@ -1,5 +1,5 @@
 {
-    "id": "c33fa1a6-68a7-491e-bf49-9d7b99671c48",
+    "id": "0a63d0d1-42a1-4951-80ed-023b89352473",
     "version": "3.0.0",
     "requiredApiVersion": "^1.23.0",
     "iconFile": "icon.png",
@@ -8,10 +8,10 @@
         "homepage": "https://github.com/RocketChat/rocket.chat.app-poll",
         "support": "https://github.com/RocketChat/rocket.chat.app-poll/issues"
     },
-    "name": "Poll",
+    "name": "Poll Plus",
     "nameSlug": "poll",
     "classFile": "PollApp.ts",
-    "description": "A simple app to create polls on Rocket.Chat. Use the slash command: /poll [Question?]",
+    "description": "Create basic and advanced polls directly in Rocket.Chat. Use the slash command: /poll [Question?]",
     "implements": [
         "IUIKitInteractionHandler"
     ],

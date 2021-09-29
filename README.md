@@ -41,3 +41,6 @@ rc-apps deploy
 ```
 
 Follow the instructions and when you're done, the app will be installed on your Rocket.Chat server.
+
+**Icon Credit**
+<div>Icons made by <a href="https://www.flaticon.com/authors/bqlqn" title="bqlqn">bqlqn</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
