@@ -1,12 +1,12 @@
 {
     "id": "0a63d0d1-42a1-4951-80ed-023b89352473",
-    "version": "3.0.0",
+    "version": "1.0.0",
     "requiredApiVersion": "^1.23.0",
     "iconFile": "icon.png",
     "author": {
-        "name": "Rocket.Chat",
-        "homepage": "https://github.com/RocketChat/rocket.chat.app-poll",
-        "support": "https://github.com/RocketChat/rocket.chat.app-poll/issues"
+        "name": "Poll Plus",
+        "homepage": "https://github.com/Poll-Plus/rocket.chat.app-poll",
+        "support": "https://github.com/Poll-Plus/rocket.chat.app-poll/issues"
     },
     "name": "Poll Plus",
     "nameSlug": "poll",
@@ -42,6 +42,9 @@
         },
         {
             "name": "ui.interact"
+        },
+        {
+            "name": "networking"
         }
     ]
 }
