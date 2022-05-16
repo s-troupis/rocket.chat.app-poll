@@ -8,6 +8,7 @@ import { IModalContext, IPoll, pollVisibility } from '../definition';
 import { createPollBlocks } from './createPollBlocks';
 
 export async function createPollMessage(data: IUIKitViewSubmitIncomingInteraction, read: IRead, modify: IModify, persistence: IPersistence, uid: string) {
+
     const { view: { id } } = data;
     let { state }: {
         state?: any;
@@ -17,7 +18,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     const [record] = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
     let anonymousOptions = [];
     if (5 > 4) {
-        return {exc: "createPollMessage"};
+        throw {exc: "createPollMessage"};
     }
     // When createPollMessage is called from mixed visibility modal case
     // the second-last view id contains slashcommand data
