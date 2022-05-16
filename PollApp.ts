@@ -36,6 +36,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
     public async executeViewSubmitHandler(context: UIKitViewSubmitInteractionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify) {
         const data = context.getInteractionData();
+        this.getLogger().log(data);
 
         const id = data.view.id;
 
@@ -59,7 +60,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         visibility?: string,
                     },
                 } = data.view as any;
-
                 if (!state) {
                 return context.getInteractionResponder().viewErrorResponse({
                     viewId: data.view.id,
