@@ -38,7 +38,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         const data = context.getInteractionData();
 
         const id = data.view.id;
-/*
+
         if (/create-poll-modal/i.test(id)) {
 
             const { state }: {
@@ -65,6 +65,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     viewId: data.view.id,
                     errors: {
                         question: 'Error creating poll',
+                        a: "1",
                     },
                 });
             }
@@ -74,7 +75,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 } catch (err) {
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
-                        errors: err,
+                        errors: {q: "err1"},
                     });
                 }
             } else {
@@ -82,20 +83,21 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 try {
                     const modal = await createMixedVisibilityModal({ question: state.poll.question, persistence, modify, data });
                     await modify.getUiController().openModalView(modal, context.getInteractionData(), data.user);
-
                     return {
                         success: true,
+                        foo: "2",
                     };
 
                 } catch (err) {
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
-                        errors: err,
+                        errors: {q: "err2"},
                     });
                 }
             }
             return {
                 success: true,
+                foo: "3",
             };
         } else if (/create-live-poll-modal/.test(id)) {
             const { state }: {
