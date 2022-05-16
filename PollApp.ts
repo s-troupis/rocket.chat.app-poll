@@ -38,28 +38,29 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         const data = context.getInteractionData();
 
         const id = data.view.id;
-
+/*
         if (/create-poll-modal/i.test(id)) {
 
-                const { state }: {
-                    state: {
-                        poll: {
-                            question: string,
-                            [option: string]: string,
-                        },
-                        config?: {
-                            mode?: string,
-                            visibility?: string,
-                            additionalChoices?: string,
-                            wordCloud?: string;
-                        },
+            const { state }: {
+                state: {
+                    poll: {
+                        question: string,
+                        [option: string]: string,
                     },
                     config?: {
                         mode?: string,
                         visibility?: string,
+                        additionalChoices?: string,
+                        wordCloud?: string;
                     },
-                } = data.view as any;
-                if (!state) {
+                },
+                config?: {
+                    mode?: string,
+                    visibility?: string,
+                },
+            } = data.view as any;
+
+            if (!state) {
                 return context.getInteractionResponder().viewErrorResponse({
                     viewId: data.view.id,
                     errors: {
@@ -67,8 +68,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     },
                 });
             }
-
-                if (state.config && state.config.visibility !== pollVisibility.mixed) {
+            if (state.config && state.config.visibility !== pollVisibility.mixed) {
                 try {
                     await createPollMessage(data, read, modify, persistence, data.user.id);
                 } catch (err) {
@@ -94,8 +94,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     });
                 }
             }
-
-                return {
+            return {
                 success: true,
             };
         } else if (/create-live-poll-modal/.test(id)) {
@@ -193,71 +192,67 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 }
         } else {
 
-        const modal = await createLivePollModal({id: data.view.id, question: '', persistence, modify, data, pollIndex, totalPolls});
-        return context.getInteractionResponder().updateModalViewResponse(modal);
+            const modal = await createLivePollModal({id: data.view.id, question: '', persistence, modify, data, pollIndex, totalPolls});
+            return context.getInteractionResponder().updateModalViewResponse(modal);
         }
-            } else if (/create-mixed-visibility-modal/.test(id)) {
+        } else if (/create-mixed-visibility-modal/.test(id)) {
 
-                const { state }: {
-                    state: {
-                        mixedVisibility: {
-                        anonymousOptions: any,
-                        additionalChoices?: string;
-                        },
-                    },
-                } = data.view as any;
-
-                if (!state) {
-                    return context.getInteractionResponder().viewErrorResponse({
-                        viewId: data.view.id,
-                        errors: {
-                            question: 'Error building mixed visibility modal',
-                        },
-                    });
-                }
-
-                try {
-                    await createPollMessage(data, read, modify, persistence, data.user.id);
-                } catch (err) {
-                    return context.getInteractionResponder().viewErrorResponse({
-                        viewId: data.view.id,
-                        errors: err,
-                    });
+        const { state }: {
+            state: {
+                mixedVisibility: {
+                anonymousOptions: any,
+                additionalChoices?: string;
+                },
+            },
+        } = data.view as any;
+        if (!state) {
+            return context.getInteractionResponder().viewErrorResponse({
+                viewId: data.view.id,
+                errors: {
+                    question: 'Error building mixed visibility modal',
+                },
+            });
         }
-            } else if (/add-option-modal/.test(id)) {
-                const { state }: {
-                    state: {
-                        addOption: {
-                            option: string,
-                        },
-                    },
-                } = data.view as any;
-                if (!state) {
-                    return context.getInteractionResponder().viewErrorResponse({
-                        viewId: data.view.id,
-                        errors: {
-                            option: 'Error adding option',
-                        },
-                    });
-                }
-
-                try {
-                    const logger = this.getLogger();
-                    await updatePollMessage({data, read, modify, persistence, logger});
-                } catch (err) {
-                    this.getLogger().log(err);
-                    return context.getInteractionResponder().viewErrorResponse({
-                        viewId: data.view.id,
-                        errors: err,
-                    });
-                }
-
-                return {
-                    success: true,
-                };
-            }
-
+        try {
+            await createPollMessage(data, read, modify, persistence, data.user.id);
+        } catch (err) {
+            return context.getInteractionResponder().viewErrorResponse({
+                viewId: data.view.id,
+                errors: err,
+            });
+        }
+        } else if (/add-option-modal/.test(id)) {
+        const { state }: {
+            state: {
+                addOption: {
+                    option: string,
+                },
+            },
+        } = data.view as any;
+        if (!state) {
+            return context.getInteractionResponder().viewErrorResponse({
+                viewId: data.view.id,
+                errors: {
+                    option: 'Error adding option',
+                },
+            });
+        }
+        try {
+            const logger = this.getLogger();
+            await updatePollMessage({data, read, modify, persistence, logger});
+        } catch (err) {
+            this.getLogger().log(err);
+            return context.getInteractionResponder().viewErrorResponse({
+                viewId: data.view.id,
+                errors: err,
+            });
+        }
         return {
+            success: true,
+        };
+        }
+        */
+    return {
         success: true,
     };
 }
@@ -270,14 +265,13 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         switch (actionId) {
             case 'vote': {
                 await votePoll({ data, read, persistence, modify });
+
                 return {
                     success: true,
                 };
             }
 
             case 'create': {
-                
-                this.getLogger().error("createPollModal " + actionId);
                 const modal = await createPollModal({ data, persistence, modify });
 
                 return context.getInteractionResponder().openModalViewResponse(modal);
