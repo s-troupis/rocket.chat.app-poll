@@ -113,7 +113,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         const { actionId } = data;
 
         switch (actionId) {
-            /*
+            
             case 'vote': {
                 await votePoll({ data, read, persistence, modify });
 
@@ -121,7 +121,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     success: true,
                 };
             }
-            */
+            
             case 'create': {
                 const modal = await createPollModal({ data, persistence, modify });
 
