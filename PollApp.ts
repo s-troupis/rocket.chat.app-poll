@@ -131,7 +131,15 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             case 'addChoice': {
                 let modal;
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, data.container.id);
-                const [record] = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
+                const resp = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
+                let record = resp[0];
+                if (resp.length > 1) {
+                    if (resp[0].hasOwnProperty("options")) {
+                        record = resp[1];
+                    } else {
+                        record = resp[0];
+                    }
+                }
                 data.room = record.room;
                 (data as any).threadId = record.threadId;
                 if (data.value && data.value.includes('live-')) {
