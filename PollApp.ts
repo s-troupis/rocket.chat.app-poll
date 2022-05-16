@@ -254,6 +254,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         */
     return {
         success: true,
+        id: id,
+        data: data,
     };
 }
 
