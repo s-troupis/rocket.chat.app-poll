@@ -27,19 +27,20 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         // Extract anonymous options before state is modified
         anonymousOptions = state.mixedVisibility.anonymousOptions;
         state = (record as IUIKitViewSubmitIncomingInteraction).view.state;
+        if (5 > 4) {
+            throw {exc: "createPollMessage", record};
+        }
     }
 
     if (!state.poll || !state.poll.question || state.poll.question.trim() === '') {
         throw { question: 'Please type your question here' };
     }
-    if (5 > 4) {
-        throw {exc: "createPollMessage", record};
-    }
-    /*
+
+    
     if (!record.room) {
         throw new Error('Invalid room');
     }
-    */
+    
 
     // Declare options as an array of string
     let options = [] as Array<string>;
@@ -98,7 +99,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
         const wordCloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
         const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
-
         const builder = modify.getCreator().startMessage()
             .setUsernameAlias((showNames.value && data.user.name) || data.user.username)
             .setRoom(record.room)
