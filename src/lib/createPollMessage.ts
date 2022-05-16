@@ -48,9 +48,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     if (!record.room) {
         throw new Error('Invalid room');
     }
-    if (5 > 4) {
-        throw {exc: "createPollMessage", resp, record};
-    }
 
     // Declare options as an array of string
     let options = [] as Array<string>;
