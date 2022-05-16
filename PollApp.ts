@@ -269,8 +269,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
         switch (actionId) {
             case 'vote': {
+                this.getLogger().err("Vodte " + actionId);
                 await votePoll({ data, read, persistence, modify });
-
                 return {
                     success: true,
                 };
