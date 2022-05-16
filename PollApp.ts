@@ -150,7 +150,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 }
                 return context.getInteractionResponder().updateModalViewResponse(modal);
             }
-            
+            /*
             case 'nextPoll': {
                 try {
                     const logger = this.getLogger();
@@ -182,7 +182,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
                 return context.getInteractionResponder().openModalViewResponse(modal);
             }
-
+            */
             case 'finish': {
                 try {
                     const logger = this.getLogger();
@@ -210,7 +210,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 
                 break;
             }
-
+            /*
             case 'mode': {
                 const viewId = data.container.id;
                 const viewAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, viewId);
@@ -235,7 +235,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     this.getLogger().log(e);
                 }
             }
-            
+            */
         }
 
         
