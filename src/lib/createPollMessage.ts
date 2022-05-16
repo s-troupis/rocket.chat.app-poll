@@ -132,6 +132,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
 
         await persistence.createWithAssociation(poll, pollAssociation);
     } catch (e) {
-        throw e;
+        throw {e, err: 'createPollMessage'};
     }
 }
