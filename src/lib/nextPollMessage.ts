@@ -76,6 +76,6 @@ export async function nextPollMessage({ data, read, persistence, modify, logger 
             }
         }
     } catch (e) {
-        logger.error('Error', e);
+        // logger.error('Error', e);
     }
 }
