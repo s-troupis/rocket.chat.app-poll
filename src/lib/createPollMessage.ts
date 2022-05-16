@@ -15,10 +15,11 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     } = data.view;
 
     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, id);
-    const [record] = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
+    const resp = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
+    const [record] = resp;
     let anonymousOptions = [];
     if (5 > 4) {
-        throw {exc: "createPollMessage", association};
+        throw {exc: "createPollMessage", resp};
     }
     // When createPollMessage is called from mixed visibility modal case
     // the second-last view id contains slashcommand data
