@@ -393,6 +393,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
     }
 
     public async initialize(configuration: IConfigurationExtend): Promise<void> {
+        /*
         configuration.scheduler.registerProcessors([
             {
                 id: 'nextPoll',
@@ -456,5 +457,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 key: tz.utc[0],
             })),
         });
+        */
     }
 }
