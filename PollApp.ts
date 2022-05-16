@@ -260,6 +260,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
         return {
         success: true,
+        abc: true,
     };
 }
 
