@@ -244,7 +244,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
                 try {
                     // const logger = undefined;
-                    await updatePollMessage({data, read, modify, persistence, logger});
+                    await updatePollMessage({data, read, modify, persistence, this.logger});
                 } catch (err) {
                     // this.getLogger().log(err);
                     return context.getInteractionResponder().viewErrorResponse({
@@ -309,7 +309,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             case 'nextPoll': {
                 try {
                     // const logger = undefined;
-                    await nextPollMessage({ data, read, persistence, modify, logger });
+                    await nextPollMessage({ data, read, persistence, modify, this.logger });
                 } catch (e) {
 
                     const { room } = context.getInteractionData();
@@ -341,7 +341,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             case 'finish': {
                 try {
                     // const logger = undefined;
-                    await finishPollMessage({ data, read, persistence, modify, http, logger });
+                    await finishPollMessage({ data, read, persistence, modify, http, this.logger });
                 } catch (e) {
 
                     const { room } = context.getInteractionData();
@@ -404,7 +404,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 processor: async (jobContext, read, modify, http, persis) => {
                     try {
                         // const logger = undefined;
-                        await nextPollMessage({ data: jobContext, read, persistence: persis, modify, logger });
+                        await nextPollMessage({ data: jobContext, read, persistence: persis, modify, this.logger });
 
                     } catch (e) {
                         const errorMessage = modify
