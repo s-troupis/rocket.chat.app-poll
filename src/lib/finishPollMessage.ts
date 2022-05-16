@@ -153,7 +153,7 @@ export async function finishPollMessage({
         }
         return;
     } catch (e) {
-        // logger.error('Error', e);
+        logger.error('Error', e);
     }
     return;
 }

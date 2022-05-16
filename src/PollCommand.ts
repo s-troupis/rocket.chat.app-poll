@@ -69,7 +69,7 @@ export class PollCommand implements ISlashCommand {
                         throw new Error(`Unable to load poll with id ${pollId}. Error ${e}`);
                     }
                 } else {
-                    // this.app.getLogger().log('Please enter a valid poll id');
+                    this.app.getLogger().log('Please enter a valid poll id');
                 }
                 return;
             } else {
