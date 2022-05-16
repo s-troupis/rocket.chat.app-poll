@@ -33,7 +33,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         throw { question: 'Please type your question here' };
     }
     if (5 > 4) {
-        throw {exc: "createPollMessage"};
+        throw {exc: "createPollMessage", record};
     }
     if (!record.room) {
         throw new Error('Invalid room');
