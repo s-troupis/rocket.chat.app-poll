@@ -86,6 +86,6 @@ export async function updatePollMessage({
 
         return modify.getUpdater().finish(message);
     } catch (e) {
-        logger.error('Error', e);
+        // logger.error('Error', e);
     }
 }

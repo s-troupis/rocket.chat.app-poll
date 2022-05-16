@@ -145,7 +145,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     };
                 }
             } catch (err) {
-                this.getLogger().log(err);
+                // this.getLogger().log(err);
                 return context.getInteractionResponder().viewErrorResponse({
                     viewId: data.view.id,
                     errors: err,
@@ -186,7 +186,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                         await createLivePollMessage(data, read, modify, persistence, data.user.id, 0);
                     }
                 } catch (err) {
-                    this.getLogger().log(err);
+                    // this.getLogger().log(err);
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
                         errors: err,
@@ -243,10 +243,10 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 }
 
                 try {
-                    const logger = this.getLogger();
+                    const logger = undefined;
                     await updatePollMessage({data, read, modify, persistence, logger});
                 } catch (err) {
-                    this.getLogger().log(err);
+                    // this.getLogger().log(err);
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
                         errors: err,
@@ -308,7 +308,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
             case 'nextPoll': {
                 try {
-                    const logger = this.getLogger();
+                    const logger = undefined;
                     await nextPollMessage({ data, read, persistence, modify, logger });
                 } catch (e) {
 
@@ -340,7 +340,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
             case 'finish': {
                 try {
-                    const logger = this.getLogger();
+                    const logger = undefined;
                     await finishPollMessage({ data, read, persistence, modify, http, logger });
                 } catch (e) {
 
@@ -386,7 +386,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     return context.getInteractionResponder().updateModalViewResponse(modal);
 
                 } catch (e) {
-                    this.getLogger().log(e);
+                    // this.getLogger().log(e);
                 }
             }
         }
@@ -403,7 +403,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 id: 'nextPoll',
                 processor: async (jobContext, read, modify, http, persis) => {
                     try {
-                        const logger = this.getLogger();
+                        const logger = undefined;
                         await nextPollMessage({ data: jobContext, read, persistence: persis, modify, logger });
 
                     } catch (e) {
