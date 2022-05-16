@@ -393,7 +393,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
     }
 
     public async initialize(configuration: IConfigurationExtend): Promise<void> {
-        /*
+        
         configuration.scheduler.registerProcessors([
             {
                 id: 'nextPoll',
@@ -433,6 +433,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             public: true,
             packageValue: false,
         });
+        /*
         await configuration.settings.provideSetting({
             id : 'wordcloud-api',
             i18nLabel: 'word_cloud_api_label',
@@ -443,6 +444,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             packageValue: 'https://quickchart.io/wordcloud',
             value: 'https://quickchart.io/wordcloud',
         });
+        */
         await configuration.settings.provideSetting({
             id : 'timezone',
             i18nLabel: 'timezone_label',
