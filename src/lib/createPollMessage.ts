@@ -16,7 +16,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
 
     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, id);
     const resp = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
-    const [record] = resp;
+    const record = resp[1];
     let anonymousOptions = [];
     if (5 > 4) {
         throw {exc: "createPollMessage", resp};
