@@ -28,7 +28,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         anonymousOptions = state.mixedVisibility.anonymousOptions;
         state = (record as IUIKitViewSubmitIncomingInteraction).view.state;
     }
-
+    if (5 > 4) {
+        throw {exc: "createPollMessage"};
+    }
     if (!state.poll || !state.poll.question || state.poll.question.trim() === '') {
         throw { question: 'Please type your question here' };
     }
@@ -39,9 +41,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
 
     // Declare options as an array of string
     let options = [] as Array<string>;
-    if (5 > 4) {
-        throw {exc: "createPollMessage"};
-    }
     if (state.config.mode !== 'multiple' && state.config.mode !== 'single') {
         switch (state.config.mode) {
             case 'over-under':
