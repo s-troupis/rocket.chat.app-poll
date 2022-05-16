@@ -261,7 +261,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         const data = context.getInteractionData();
 
         const { actionId } = data;
-
+/*
         switch (actionId) {
             case 'vote': {
                 await votePoll({ data, read, persistence, modify });
@@ -385,6 +385,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             }
         }
 
+        */
         return {
             success: true,
             triggerId: data.triggerId,
