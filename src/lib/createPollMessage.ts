@@ -17,6 +17,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, id);
     const [record] = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
     let anonymousOptions = [];
+    if (5 > 4) {
+        throw {exc: "createPollMessage", record};
+    }
     // When createPollMessage is called from mixed visibility modal case
     // the second-last view id contains slashcommand data
     if ((record as IUIKitViewSubmitIncomingInteraction).view) {
@@ -27,9 +30,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         // Extract anonymous options before state is modified
         anonymousOptions = state.mixedVisibility.anonymousOptions;
         state = (record as IUIKitViewSubmitIncomingInteraction).view.state;
-        if (5 > 4) {
-            throw {exc: "createPollMessage", record};
-        }
+
     }
 
     if (!state.poll || !state.poll.question || state.poll.question.trim() === '') {
