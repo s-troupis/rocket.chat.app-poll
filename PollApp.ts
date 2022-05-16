@@ -269,7 +269,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
         switch (actionId) {
             case 'vote': {
-                this.getLogger().error("Vodte " + actionId);
                 await votePoll({ data, read, persistence, modify });
                 return {
                     success: true,
@@ -277,6 +276,8 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             }
 
             case 'create': {
+                
+                this.getLogger().error("createPollModal " + actionId);
                 const modal = await createPollModal({ data, persistence, modify });
 
                 return context.getInteractionResponder().openModalViewResponse(modal);
