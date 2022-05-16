@@ -17,9 +17,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, id);
     const [record] = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
     let anonymousOptions = [];
-    if (5 > 4) {
-        throw {exc: "createPollMessage"};
-    }
     // When createPollMessage is called from mixed visibility modal case
     // the second-last view id contains slashcommand data
     if ((record as IUIKitViewSubmitIncomingInteraction).view) {
@@ -42,7 +39,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
 
     // Declare options as an array of string
     let options = [] as Array<string>;
-
+    if (5 > 4) {
+        throw {exc: "createPollMessage"};
+    }
     if (state.config.mode !== 'multiple' && state.config.mode !== 'single') {
         switch (state.config.mode) {
             case 'over-under':
