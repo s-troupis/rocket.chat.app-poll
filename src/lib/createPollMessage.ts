@@ -36,7 +36,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         // Extract anonymous options before state is modified
         anonymousOptions = state.mixedVisibility.anonymousOptions;
         state = (record as IUIKitViewSubmitIncomingInteraction).view.state;
-
     }
 
     if (!state.poll || !state.poll.question || state.poll.question.trim() === '') {

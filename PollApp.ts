@@ -150,7 +150,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 }
                 return context.getInteractionResponder().updateModalViewResponse(modal);
             }
-            /*
+            
             case 'nextPoll': {
                 try {
                     const logger = this.getLogger();
@@ -235,7 +235,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     this.getLogger().log(e);
                 }
             }
-            */
+            
         }
 
         
