@@ -127,7 +127,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
                 return context.getInteractionResponder().openModalViewResponse(modal);
             }
-            /*
+            
             case 'addChoice': {
                 let modal;
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, data.container.id);
@@ -150,7 +150,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 }
                 return context.getInteractionResponder().updateModalViewResponse(modal);
             }
-
+            /*
             case 'nextPoll': {
                 try {
                     const logger = this.getLogger();
