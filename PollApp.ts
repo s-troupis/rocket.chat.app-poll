@@ -75,7 +75,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                 } catch (err) {
                     return context.getInteractionResponder().viewErrorResponse({
                         viewId: data.view.id,
-                        errors: {q: "err1"},
+                        errors: {q: "err1", err},
                     });
                 }
             } else {
