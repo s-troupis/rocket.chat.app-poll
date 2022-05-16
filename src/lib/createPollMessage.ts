@@ -18,7 +18,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     const resp = await read.getPersistenceReader().readByAssociation(association) as Array<IModalContext>;
     const record = resp[1];
     let anonymousOptions = [];
-
+    if (5 > 4) {
+        throw {exc: "createPollMessage", resp};
+    }
     // When createPollMessage is called from mixed visibility modal case
     // the second-last view id contains slashcommand data
     if ((record as IUIKitViewSubmitIncomingInteraction).view) {
