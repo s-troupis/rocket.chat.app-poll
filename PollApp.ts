@@ -261,8 +261,9 @@ export class PollApp extends App implements IUIKitInteractionHandler {
         const data = context.getInteractionData();
 
         const { actionId } = data;
-/*
+
         switch (actionId) {
+            /*
             case 'vote': {
                 await votePoll({ data, read, persistence, modify });
 
@@ -270,13 +271,13 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     success: true,
                 };
             }
-
+            */
             case 'create': {
                 const modal = await createPollModal({ data, persistence, modify });
 
                 return context.getInteractionResponder().openModalViewResponse(modal);
             }
-
+            /*
             case 'addChoice': {
                 let modal;
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, data.container.id);
@@ -356,6 +357,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                              errorMessage.getMessage(),
                          );
                 }
+                
                 break;
             }
 
@@ -383,9 +385,10 @@ export class PollApp extends App implements IUIKitInteractionHandler {
                     this.getLogger().log(e);
                 }
             }
+            */
         }
 
-        */
+        
         return {
             success: true,
             triggerId: data.triggerId,
@@ -433,7 +436,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             public: true,
             packageValue: false,
         });
-        /*
+        
         await configuration.settings.provideSetting({
             id : 'wordcloud-api',
             i18nLabel: 'word_cloud_api_label',
@@ -444,7 +447,7 @@ export class PollApp extends App implements IUIKitInteractionHandler {
             packageValue: 'https://quickchart.io/wordcloud',
             value: 'https://quickchart.io/wordcloud',
         });
-        */
+        
         await configuration.settings.provideSetting({
             id : 'timezone',
             i18nLabel: 'timezone_label',
