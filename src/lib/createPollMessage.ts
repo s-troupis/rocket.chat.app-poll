@@ -131,11 +131,10 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         const block = modify.getCreator().getBlockBuilder();
         createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions,  wordCloudAPI.value);
         builder.setBlocks(block);
-        const creator = modify.getCreator();
         if (5 > 4) {
-            throw {ex2: builder, ex3: block};
+            throw {ex2: modify, ex3: block};
         }
-        const messageId = await creator.finish(builder);
+        const messageId = await modify.getCreator().finish(builder);
 
         poll.msgId = messageId;
 
