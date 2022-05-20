@@ -136,7 +136,12 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         if (5 > 4) {
             throw {ex: builder};
         }
-        const messageId = await modify.getCreator().finish(builder);
+        let messageId;
+        try {
+            messageId = await modify.getCreator().finish(builder);
+        } catch (e) {
+            throw {ex: "14", abc: e};
+        }
 
         poll.msgId = messageId;
 
