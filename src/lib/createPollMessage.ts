@@ -24,6 +24,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             record = resp[0];
         }
     }
+    if (record.room) {
+        record.room.isReadOnly = false;
+    }
     // const record = resp[1];
     let anonymousOptions = [];
 
@@ -113,9 +116,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         if (record.threadId) {
             builder.setThreadId(record.threadId);
         }
-        // if (5 > 4) {
-        //     throw {ex: "12"};
-        // }
         const poll: IPoll = {
             question: state.poll.question,
             uid,
