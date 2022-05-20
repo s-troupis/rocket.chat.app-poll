@@ -24,7 +24,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
             record = resp[0];
         }
     }
-
     // const record = resp[1];
     let anonymousOptions = [];
 
@@ -44,6 +43,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     if (!state.poll || !state.poll.question || state.poll.question.trim() === '') {
         throw { question: 'Please type your question here' };
     }
+    
     if (!record.room) {
         throw new Error('Invalid room');
     }
@@ -102,6 +102,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     try {
         const { config = { mode: 'multiple', visibility: pollVisibility.open, additionalChoices: 'disallowAddingChoices', wordCloud: 'disabled' } } = state;
         const { mode = 'multiple', visibility = pollVisibility.open, additionalChoices = 'disallowAddingChoices', wordCloud = 'disabled' } = config;
+
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
         const wordCloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
         const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
@@ -114,6 +115,7 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         if (record.threadId) {
             builder.setThreadId(record.threadId);
         }
+
         const poll: IPoll = {
             question: state.poll.question,
             uid,
@@ -130,15 +132,15 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
 
         const block = modify.getCreator().getBlockBuilder();
         createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions,  wordCloudAPI.value);
+
         builder.setBlocks(block);
 
         const messageId = await modify.getCreator().finish(builder);
-
         poll.msgId = messageId;
 
         const pollAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, messageId);
-        await persistence.createWithAssociation(poll, pollAssociation);
 
+        await persistence.createWithAssociation(poll, pollAssociation);
     } catch (e) {
         throw {e};
     }
