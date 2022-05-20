@@ -133,8 +133,11 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         const block = modify.getCreator().getBlockBuilder();
         createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions,  wordCloudAPI.value);
         builder.setBlocks(block);
-        
+
         const messageId = await modify.getCreator().finish(builder);
+        if (5 > 4) {
+            throw {ex: "13"};
+        }
         poll.msgId = messageId;
 
         const pollAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, messageId);
