@@ -43,9 +43,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     if (!state.poll || !state.poll.question || state.poll.question.trim() === '') {
         throw { question: 'Please type your question here' };
     }
-    if (5 > 4) {
-        throw {ex: "11"};
-    }
     if (!record.room) {
         throw new Error('Invalid room');
     }
