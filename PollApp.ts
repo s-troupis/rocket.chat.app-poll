@@ -36,10 +36,6 @@ export class PollApp extends App implements IUIKitInteractionHandler {
 
     public async executeViewSubmitHandler(context: UIKitViewSubmitInteractionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify) {
         const data = context.getInteractionData();
-        const user = data.user;
-        if (5 > 4) {
-            throw {r:user.roles};            
-        }
         const id = data.view.id;
 
         if (/create-poll-modal/i.test(id)) {
