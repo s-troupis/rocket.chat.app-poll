@@ -47,10 +47,6 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         throw new Error('Invalid room');
     }
 
-    if (5 > 4) {
-        throw {ex: "12"};
-    }
-
 
     // Declare options as an array of string
     let options = [] as Array<string>;
@@ -105,7 +101,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
     try {
         const { config = { mode: 'multiple', visibility: pollVisibility.open, additionalChoices: 'disallowAddingChoices', wordCloud: 'disabled' } } = state;
         const { mode = 'multiple', visibility = pollVisibility.open, additionalChoices = 'disallowAddingChoices', wordCloud = 'disabled' } = config;
-
+        if (5 > 4) {
+            throw {ex: "11"};
+        }
         const showNames = await read.getEnvironmentReader().getSettings().getById('use-user-name');
         const wordCloudAPI = await read.getEnvironmentReader().getSettings().getById('wordcloud-api');
         const timeZone = await read.getEnvironmentReader().getSettings().getById('timezone');
@@ -118,7 +116,9 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
         if (record.threadId) {
             builder.setThreadId(record.threadId);
         }
-
+        if (5 > 4) {
+            throw {ex: "12"};
+        }
         const poll: IPoll = {
             question: state.poll.question,
             uid,
@@ -135,15 +135,21 @@ export async function createPollMessage(data: IUIKitViewSubmitIncomingInteractio
 
         const block = modify.getCreator().getBlockBuilder();
         createPollBlocks(block, poll.question, options, poll, showNames.value, timeZone.value, poll.anonymousOptions,  wordCloudAPI.value);
-
         builder.setBlocks(block);
-
+        if (5 > 4) {
+            throw {ex: "13"};
+        }
         const messageId = await modify.getCreator().finish(builder);
         poll.msgId = messageId;
 
         const pollAssociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, messageId);
-
+        if (5 > 4) {
+            throw {ex: "14"};
+        }
         await persistence.createWithAssociation(poll, pollAssociation);
+        if (5 > 4) {
+            throw {ex: "15"};
+        }
     } catch (e) {
         throw {e};
     }
