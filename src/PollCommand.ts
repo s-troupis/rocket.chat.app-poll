@@ -16,7 +16,7 @@ export class PollCommand implements ISlashCommand {
 
     public async executor(context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void> {
         const roles = context.getSender().roles;
-        if (!roles.includes("admin")  && !roles.includes("moderator") &&  !roles.includes("owner")) {
+        if (!roles.includes("admin") || !roles.includes("moderator") || !roles.includes("owner")) {
             return;
         } 
         const triggerId = context.getTriggerId();
